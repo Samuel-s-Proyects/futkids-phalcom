@@ -11,6 +11,7 @@ import { toast } from '../../ui/toast.js';
 import { canOperate, currentMatch, ensureTournamentFor, isAssignedReferee, matchChange, matchEvents, matchIncidents } from './common.js';
 import { openGoalForm } from './goal-form.js';
 import { openIncidentForm } from './incident-form.js';
+import { matchdayName, matchdayOf, openMoveForm, openPostponeForm } from './league-actions.js';
 import { openScheduleForm } from './schedule-form.js';
 import { openCorrection, openMatchSheet } from './sheet.js';
 
@@ -41,6 +42,13 @@ function actions(match) {
   const list = [];
   const operator = canOperate(match);
   const both = match.home_team_id && match.away_team_id;
+  const league = store.tournament.type === 'league' && !+store.tournament.is_legacy;
+  if (league && isAdmin() && ['unprogrammed', 'scheduled'].includes(match.workflow_status)) {
+    list.push(button('Aplazar', { action: 'postpone-match', data: id, iconName: 'clock' }));
+  }
+  if (league && isAdmin() && ['unprogrammed', 'suspended'].includes(match.workflow_status)) {
+    list.push(button('Mover de jornada', { action: 'move-match', data: id, iconName: 'calendar' }));
+  }
   switch (match.workflow_status) {
     case 'unprogrammed':
     case 'suspended':
@@ -78,8 +86,10 @@ function guidance(match) {
     unprogrammed: isAdmin() ? ['info', 'Siguiente paso: programarlo', 'Asigne fecha, hora, cancha y árbitro.'] : ['info', 'Pendiente de programar', 'El administrador asignará fecha, cancha y árbitro.'],
     scheduled: operator ? ['info', 'Listo para jugarse', 'Al empezar el partido, pulse «Iniciar partido» para registrar goles y tarjetas.'] : null,
     in_progress: operator ? ['success', 'Partido en juego', 'Registre cada gol al momento o, al terminar, use «Finalizar y enviar resultado» para revisar la hoja completa.'] : null,
-    awaiting_confirmation: operator ? ['warning', 'Revise y confirme', 'Compruebe goles y marcador. Al confirmar, el ganador avanza en el cuadro.'] : null,
-    suspended: ['danger', 'Partido suspendido', match.suspension_reason ?? 'Debe reprogramarse.'],
+    awaiting_confirmation: operator ? ['warning', 'Revise y confirme', store.tournament.type === 'league'
+      ? 'Compruebe goles y marcador. Al confirmar, el resultado se suma a la tabla.'
+      : 'Compruebe goles y marcador. Al confirmar, el ganador avanza en el cuadro.'] : null,
+    suspended: ['danger', 'Partido aplazado', `${match.suspension_reason ?? 'Debe reprogramarse.'} Muévalo a otra jornada o prográmelo de nuevo.`],
   }[match.workflow_status];
   return messages ? alertBox(...messages) : '';
 }
@@ -90,10 +100,11 @@ export async function openMatch(matchId, tournamentId = 0) {
   if (!match) return;
   const t = store.tournament;
   const rounds = Math.max(...t.matches.map(m => +m.round_number));
+  const stage = t.type === 'league' ? matchdayName(matchdayOf(match)) : roundLabel(+match.round_number, rounds);
   const state = matchStatus(match);
   const events = matchEvents(match);
   const assignedReferee = referee(match.referee_user_id);
-  openDialog(`${dialogHeader({ eyebrow: `${t.name} · ${roundLabel(+match.round_number, rounds)}`, title: `${teamName(match.home_team_id)} vs. ${teamName(match.away_team_id)}`, size: 'wide' })}
+  openDialog(`${dialogHeader({ eyebrow: `${t.name} · ${stage}`, title: `${teamName(match.home_team_id)} vs. ${teamName(match.away_team_id)}`, size: 'wide' })}
     <div class="dialog__body">
       <div class="cluster">${badge(state.label, state.tone)}</div>
       ${guidance(match)}
@@ -119,6 +130,8 @@ onAction('new-incident', trigger => openIncidentForm(matchFrom(trigger)));
 onAction('edit-incident', trigger => openIncidentForm(matchFrom(trigger), +trigger.dataset.id));
 onAction('open-sheet', trigger => (trigger.dataset.mode === 'correction' ? openCorrection(matchFrom(trigger)) : openMatchSheet(matchFrom(trigger), trigger.dataset.mode)));
 onAction('back-to-match', trigger => openMatch(+trigger.dataset.id));
+onAction('postpone-match', trigger => openPostponeForm(matchFrom(trigger)));
+onAction('move-match', trigger => openMoveForm(matchFrom(trigger)));
 
 onAction('start-match', async trigger => {
   const match = matchFrom(trigger);

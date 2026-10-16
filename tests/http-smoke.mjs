@@ -128,6 +128,22 @@ try {
   r = await admin('/api/tournaments', { method: 'POST', body: { name: 'Copa', type: 'knockout', start_date: '2000-01-01', end_date: '2000-01-02', extra_time_periods: 0, penalty_attempts_per_team: 5, penalty_sudden_death: 1 } });
   check(r.status === 422 && r.data.fields.start_date, 'Un torneo no puede empezar antes de hoy');
 
+  // League: calendar preview and generation, table
+  const nextYear = String(Number(today.slice(0, 4)) + 1);
+  r = await admin('/api/tournaments', { method: 'POST', body: { name: `Liga HTTP ${Date.now()}`, type: 'league', start_date: today, end_date: `${nextYear}-12-31`, league_rounds: 2, points_win: 3, points_draw: 1, points_loss: 0 } });
+  check(r.status === 201 && r.data.record.type === 'league', 'Alta de torneo por puntos');
+  const leagueId = r.data.record.id;
+  await admin(`/api/tournaments/${leagueId}/registration`, { method: 'POST', body: {} });
+  for (const teamId of [1, 2, 3]) await admin(`/api/tournaments/${leagueId}/participants`, { method: 'POST', body: { team_id: teamId } });
+  r = await admin(`/api/tournaments/${leagueId}/registration/close`, { method: 'POST', body: { draw_method: 'random' } });
+  check(r.status === 200 && r.data.record.lifecycle.next_action.key === 'generate-fixture', 'Cierre de inscripción de la liga');
+  r = await admin(`/api/tournaments/${leagueId}/fixture/preview`, { method: 'POST', body: { first_date: today, interval_days: 7 } });
+  check(r.status === 200 && r.data.preview.matchday_count === 6 && r.data.preview.matchdays.every(day => day.resting), 'Vista previa: 3 equipos a doble vuelta son 6 jornadas con descanso');
+  r = await admin(`/api/tournaments/${leagueId}/fixture`, { method: 'POST', body: { game_dates: r.data.preview.matchdays.map(day => day.game_date) } });
+  check(r.status === 201 && r.data.record.matches.length === 6 && r.data.record.status === 'in_progress', 'Calendario generado con sus partidos');
+  r = await admin(`/api/tournaments/${leagueId}/standings`);
+  check(r.status === 200 && r.data.rows.length === 3 && r.data.rows.every(row => row.points === 0), 'Tabla de posiciones inicial');
+
   // Accounts
   r = await admin('/api/users', { method: 'POST', body: { name: 'Árbitro Temporal', email: `temporal.${Date.now()}@cantera.local`, role: 'referee', password: 'Temporal2026' } });
   check(r.status === 201 && r.data.record.must_change_password === 1, 'Alta de árbitro con contraseña temporal');

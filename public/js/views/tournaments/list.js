@@ -28,7 +28,7 @@ export function renderTournamentList(main) {
   main.innerHTML = pageHeader({
     eyebrow: 'Competencias',
     title: 'Torneos',
-    subtitle: 'Cree torneos de clasificación (eliminación directa), inscriba equipos y siga cada partido hasta el campeón.',
+    subtitle: 'Cree torneos de clasificación (eliminación directa) o por puntos (todos contra todos), inscriba equipos y siga cada partido hasta el campeón.',
     actions,
   }) + (tournaments.length
     ? `<div class="tournament-grid">${tournaments.map(card).join('')}</div>`

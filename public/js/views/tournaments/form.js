@@ -129,7 +129,7 @@ onAction('wizard-back', button => showStep(button.form, Math.max(0, +button.form
 /** Only the rules of the chosen type are shown, validated and sent. */
 onChange('tournament-type', radio => {
   const form = radio.form;
-  for (const group of $('[data-rules]', form)) {
+  for (const group of $$('[data-rules]', form)) {
     const active = group.dataset.rules === radio.value;
     group.hidden = !active;
     for (const control of group.querySelectorAll('input, select')) control.disabled = !active;

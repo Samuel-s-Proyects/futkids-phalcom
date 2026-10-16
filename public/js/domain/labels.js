@@ -23,7 +23,7 @@ const MATCH_STATES = {
   in_progress: { label: 'En juego', tone: 'success' },
   awaiting_confirmation: { label: 'Resultado por confirmar', tone: 'warning' },
   confirmed: { label: 'Finalizado', tone: 'primary' },
-  suspended: { label: 'Suspendido · por reprogramar', tone: 'danger' },
+  suspended: { label: 'Aplazado · por reprogramar', tone: 'danger' },
   cancelled: { label: 'Cancelado', tone: 'danger' },
   bye: { label: 'Pasa directo (sin rival)', tone: '' },
 };

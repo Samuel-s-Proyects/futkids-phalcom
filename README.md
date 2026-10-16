@@ -1,6 +1,6 @@
 # Cantera · Torneo infantil
 
-Aplicación real en **PHP 8.3 y Phalcon 5.22.1**, con MVC, modelos ORM, vistas Volt y MySQL/MariaDB. Incluye gestión de torneos e inscripciones, equipos, jugadores con fotografía, jornadas, goles, incidencias, reportes, acceso por roles y datos de demostración.
+Aplicación real en **PHP 8.3 y Phalcon 5.22.1**, con MVC, modelos ORM, vistas Volt y MySQL/MariaDB. Gestiona torneos de **clasificación** (eliminación directa) y **por puntos** (liga por jornadas), equipos, jugadores con fotografía, partidos con hoja de goles, tarjetas y suspensiones, reportes, y cuentas de administradores y árbitros.
 
 ## Inicio rápido en Mac o Windows
 
@@ -29,76 +29,85 @@ curl http://localhost:8080/api/health
 
 La respuesta de salud debe mostrar `status: ok` y `Phalcon 5.22.1`. Si el puerto 8080 está ocupado, cambia `APP_PORT` en `.env` y vuelve a ejecutar `docker compose up -d`.
 
+> **Actualización de una instalación anterior.** Respalda el volumen `database` antes de actualizar. Al iniciar, las migraciones 008 a 012 convierten los datos existentes: los resultados quedan guardados en cada partido, los goles registrados dos veces por el flujo anterior se depuran (y quedan en el historial del partido), y las jornadas y goles globales pasan a un «Torneo histórico» de solo consulta.
+
 ## Cuentas de prueba
 
 | Cuenta | Correo | Contraseña | Permisos |
 | --- | --- | --- | --- |
-| Administrador | admin@cantera.local | Cantera2026! | Crear, editar, borrar y consultar |
-| Árbitro | arbitro@cantera.local | Arbitro2026! | Consultar jugadores e imprimir reportes |
+| Administrador | admin@cantera.local | Cantera2026! | Configura torneos, catálogo y usuarios |
+| Árbitro | arbitro@cantera.local | Arbitro2026! | Consulta todo; registra goles, tarjetas y resultados de sus partidos |
 
-Los botones del acceso rellenan estas credenciales cuando `APP_ENV=development`. En producción se ocultan. Las contraseñas se almacenan con hash de Phalcon.
+Los botones del acceso rellenan estas credenciales cuando `APP_ENV=development`. En producción se ocultan. Las contraseñas se almacenan con hash de Phalcon. Desde **Usuarios** un administrador crea más administradores o árbitros.
 
 ## Datos precargados
 
 - 4 equipos y 20 jugadores ficticios, con imágenes ilustrativas de prueba.
-- 5 jornadas: 3, 10, 17, 24 y 31 de octubre de 2026.
-- Goles de las jornadas 1 y 2 y seis incidencias.
+- «Torneo histórico 2026» (por puntos, finalizado) con 5 jornadas: 3, 10, 17, 24 y 31 de octubre de 2026, goles de las jornadas 1 y 2 y seis incidencias.
 - Santiago Rodríguez, Leonardo Castillo y Javier Reyes están suspendidos el 17/10/2026, jornada 3.
-- La tabla de goleadores ordena por goles descendentes; Mateo López encabeza los datos iniciales con 10.
+- Mateo López encabeza la tabla de goleadores inicial con 10 goles.
 
-## Reglas documentadas
+## Cómo se usa
 
-1. Un jugador pertenece a un equipo. Si tiene goles o incidencias, conserva ese equipo durante el torneo para proteger el historial.
-2. Categoría infantil de 5 a 14 años al 03/10/2026. `AGE_MIN`, `AGE_MAX` y `AGE_REFERENCE_DATE` permiten adaptar la categoría. Esta es una decisión de implementación, porque el enunciado no fija edades.
-3. Cada jornada tiene número y fecha únicos. Se pueden administrar desde el inicio del torneo.
-4. Se registra un total de 0 a 20 goles por jugador y jornada. Para corregirlo, se edita el mismo registro.
-5. Una tarjeta roja exige fecha de suspensión igual o posterior a la incidencia. La suspensión afecta únicamente las jornadas de esa fecha. Una amarilla no genera suspensión ni acumulación automática.
-6. No se pueden registrar goles de un jugador suspendido. Tampoco se admite una roja que contradiga goles ya registrados: primero se corrige ese registro.
-7. Los registros con asociaciones no se borran. Para cambiar la fecha de una jornada con suspensiones asociadas, se ajustan esas suspensiones primero.
-8. Se reciben fotografías JPG/PNG de hasta 2 MB y 25 megapíxeles. El servidor comprueba MIME y decodificación, las reduce a 1,000 píxeles y las convierte a JPEG. Los nombres de archivo son aleatorios.
-9. Nombres y apellidos aceptan letras Unicode, espacios, guiones y apóstrofos. La fecha de nacimiento no puede ser futura; el formulario identifica los campos obligatorios y permite reemplazar o quitar la fotografía guardada.
-10. Los torneos nuevos comienzan en borrador. Solo se pueden editar en ese estado; al abrir la inscripción se pueden inscribir equipos activos sin duplicarlos y retirarlos antes del cierre.
-11. Antes del cierre se puede ordenar manualmente a los participantes. Al cerrar se elige entre conservar ese orden manual o seleccionar sorteo aleatorio. El método seleccionado queda guardado en el torneo.
-12. El cuadro de eliminación directa se genera una sola vez. En el modo manual, las posiciones respetan el orden guardado y los primeros sembrados reciben los byes; en el modo aleatorio se sortea y guarda el orden antes de asignar las posiciones. Los byes se muestran como avances automáticos.
-13. Cada torneo guarda la cantidad de períodos extra, los minutos por período, los penales iniciales por equipo y si aplica muerte súbita. No se introducen valores predeterminados de reglamento; el administrador completa estos campos y los consulta en el detalle.
-14. El administrador programa fecha y hora de cada partido dentro del período del torneo. Captura el marcador reglamentario, los períodos extra configurados cuando hay empate, autogoles por período y goles por jugador. El marcador debe coincidir con los goles individuales y autogoles; los jugadores suspendidos en la fecha del partido no pueden figurar como goleadores.
-15. Si persiste el empate tras el tiempo extra, se registra la tanda en orden alternado desde el equipo elegido para patear primero. La tanda termina al haber ganador; la muerte súbita se ofrece solo si está configurada. Si está desactivada y los penales iniciales terminan empatados, se rechaza el resultado para evitar avanzar un partido sin ganador.
-16. Los goles de juego se suman al ranking individual. Los autogoles y los penales de la tanda se guardan por separado y no se atribuyen a un jugador. El ganador avanza automáticamente en el cuadro.
+1. **Torneos → Nuevo torneo.** Un asistente pide el tipo (clasificación o por puntos), los datos y las reglas: tiempo extra y penales para clasificación; vueltas y puntos para la liga. Cada campo explica qué admite.
+2. **Abrir inscripciones** e inscribir equipos en la pestaña *Equipos*. Se pueden ordenar con las flechas.
+3. **Cerrar inscripción** eligiendo sorteo aleatorio u orden manual.
+4. **Generar cuadro** (clasificación) o **Generar calendario** (liga): una vista previa propone la fecha de cada jornada y quién descansa; se puede ajustar antes de generar.
+5. Abrir cada partido para **programarlo** (fecha y hora, cancha y árbitro), **iniciarlo**, registrar **goles** y **tarjetas**, y al final **Finalizar y enviar resultado** con la hoja del partido. El resultado se **confirma** después; en clasificación el ganador avanza, en liga se suma a la tabla.
+6. En una liga, un partido que no se pudo jugar se **aplaza** y luego se **mueve** a otra jornada, por ejemplo a una **jornada extraordinaria**.
 
-La inscripción, los dos métodos de orden, la generación del cuadro, la programación de partidos, la captura de resultados y el desempate están disponibles en **Torneos**. Desde cada enfrentamiento con ambos equipos definidos, **Ver partido** abre el detalle; prográmalo si aún no tiene árbitro y horario, inícialo y usa **Registrar gol** para guardar equipo, jugador y minuto. El marcador y la lista de goles se recargan desde los eventos guardados del partido.
+La página de cada torneo muestra en qué etapa está y cuál es el siguiente paso. Las reglas completas (desempates, fechas, choques de horario, validaciones) están en [docs/REGLAS_TORNEOS.md](docs/REGLAS_TORNEOS.md).
+
+## Reglas principales
+
+1. Un jugador pertenece a un equipo. Si tiene goles o incidencias, conserva ese equipo para proteger el historial. El dorsal (1 a 99) no se repite dentro del equipo.
+2. Categoría infantil de 5 a 14 años al 03/10/2026, configurable con `AGE_MIN`, `AGE_MAX` y `AGE_REFERENCE_DATE`.
+3. Nada se programa en el pasado: un torneo no empieza antes de hoy, un partido no se programa antes de ahora y una incidencia no tiene fecha futura. Los partidos se juegan dentro de las fechas del torneo (y de su jornada, en liga).
+4. Los textos no admiten caracteres especiales (`# @ / < >`, etc.) y los campos numéricos aceptan solo dígitos. El navegador y el servidor aplican las mismas reglas.
+5. Un equipo, una cancha o un árbitro no pueden tener dos partidos que se superpongan en ningún torneo. La cancha se compara sin mayúsculas, tildes ni signos.
+6. El marcador se calcula a partir de los goles registrados, nunca se escribe a mano. Los autogoles cuentan para el rival y no se atribuyen a ningún goleador.
+7. Una tarjeta roja suspende al jugador en la fecha indicada; no puede anotar ese día ni después del minuto de su expulsión en el mismo partido.
+8. Liga: 3/1/0 puntos por defecto; desempate por diferencia de goles, goles a favor, enfrentamiento directo y juego limpio.
+9. Los registros con historial no se borran; las cuentas se desactivan. Una cuenta desactivada pierde la sesión de inmediato.
+10. Fotografías JPG/PNG de hasta 2 MB y 25 megapíxeles; el servidor comprueba el tipo real, las reduce y las convierte a JPEG con nombre aleatorio.
 
 ## Reportes y exportación
 
-- **Árbitro:** equipo y jornada; incluye nombres, foto, nacimiento, edad, camiseta y estado de suspensión.
-- **Incidencias:** equipo, un jugador o todos, tarjeta y rango de fechas inclusivo.
-- **Goleadores:** equipo y jornada; total de goles por jugador en orden descendente.
-- **Ficha individual:** datos personales, foto, equipo, posición, goles, incidencias y estado por jornada.
+- **Listado para el árbitro:** para un partido programado (o una jornada del histórico), jugadores habilitados y suspendidos de los equipos que juegan.
+- **Incidencias:** por equipo, jugador, tarjeta y rango de fechas inclusivo.
+- **Goleadores:** de todos los torneos o de uno, y por jornada.
+- **Ficha individual:** datos, foto, goles, tarjetas y suspensiones.
 
-Los reportes ofrecen CSV y **Imprimir / PDF**. Para obtener un PDF, usa el diálogo del navegador y selecciona Guardar como PDF. No requieren un servicio externo de generación de documentos.
+Los reportes ofrecen CSV y **Imprimir o PDF** (diálogo de impresión del navegador → Guardar como PDF).
+
+## Interfaz
+
+Diseño propio con tokens (`public/css/tokens.css`): escala tipográfica en `rem` cuyo tamaño mínimo es 13 px, colores con contraste AA, **modo oscuro** (automático o con el botón de la barra superior), menú lateral que en el teléfono se abre como panel con fondo, y formularios a una columna en pantallas pequeñas. Cada pantalla tiene su dirección (`#torneos/3/tabla`), de modo que recargar y volver atrás funcionan.
 
 ## Estructura y uso de Phalcon
 
 | Archivo o carpeta | Responsabilidad |
 | --- | --- |
 | public/index.php | Punto de entrada MVC, cabeceras y respuestas de error |
-| config/bootstrap.php | Servicios DI: conexión, sesiones, Security, ACL, dispatcher, Volt |
+| config/bootstrap.php, config/services.php | Contenedor DI: conexión, sesión, Security, ACL, Volt, reloj y servicios de negocio |
 | config/routes.php | Rutas y métodos HTTP mediante el router Phalcon |
-| app/Controllers | Autenticación, catálogos, consultas y reportes |
+| config/validation-rules.json | Reglas de texto compartidas por el servidor y el navegador |
+| app/Controllers | Autenticación, cuentas, torneos, partidos, catálogo y reportes |
 | app/Models | Modelos `Phalcon\Mvc\Model` y relaciones |
-| app/Services/Tournament.php | Reglas de negocio, transacciones y reportes |
-| app/Services/PhotoStorage.php | Validación y almacenamiento de fotografías |
+| app/Services | Reglas de negocio: `TournamentService`, `Knockout/` (cuadro), `League/` (calendario y tabla), `Match/` (programación, hoja de partido, tarjetas, penales), catálogo, reportes y usuarios |
+| app/Validation, app/Support | Validador de formularios, normalización de texto, reloj y transacciones |
+| app/Database | Migrador versionado y datos de demostración |
 | app/views/index/index.volt | Vista de la aplicación compilada por Volt |
-| public/js | Interacción de la interfaz y reglas de presentación |
-| database | Esquemas SQL versionados, migraciones aditivas y datos de prueba reproducibles |
-| scripts | Migración, precarga y cambio de contraseña |
-| docker | Nginx, PHP y arranque de contenedores |
-| tests | Reglas de negocio, rutas HTTP e interacción DOM |
+| public/js | Interfaz en módulos ES: `core/`, `ui/`, `domain/`, `views/` |
+| public/css | Tokens de diseño, base, componentes, vistas e impresión |
+| database/migrations | Migraciones SQL por motor (MySQL y SQLite) y pasos PHP de conversión de datos |
+| tests | PHPUnit, pruebas de interfaz (node:test, jsdom), E2E (Playwright) y HTTP |
 
-Se eligieron scripts SQL versionados en lugar de depender de DevTools para crear el proyecto: el enunciado exige usar el framework, pero no exige scaffolding. La aplicación usa Phalcon en ejecución real, no una imitación en JavaScript. Las migraciones agregan las tablas de torneos y participantes sin reemplazar el catálogo existente. La edición y el borrado utilizan una transacción y un bloqueo en MySQL para evitar inconsistencias entre goles y suspensiones. La demo de interfaz también permite probar la creación del torneo, inscripción, orden y cierre; conserva sus cambios en el almacenamiento local del navegador.
+Cada solicitud que modifica datos se ejecuta en una transacción; en MySQL además toma un bloqueo para que operaciones simultáneas (por ejemplo una roja y un gol del mismo jugador) no se crucen.
 
 ## Instalación nativa alternativa
 
-Requiere PHP 8.3+, extensión Phalcon 5.22.1+, Composer, MySQL/MariaDB y extensiones `pdo_mysql`, `mbstring`, `gd`, `fileinfo` y OpenSSL. Instala Phalcon desde las instrucciones oficiales apropiadas a tu sistema. No basta con `composer install`: Phalcon es una extensión del intérprete.
+Requiere PHP 8.3+, extensión Phalcon 5.22.1+, Composer, MySQL/MariaDB y extensiones `pdo_mysql`, `mbstring`, `intl`, `gd`, `fileinfo` y OpenSSL. Instala Phalcon desde las instrucciones oficiales apropiadas a tu sistema. No basta con `composer install`: Phalcon es una extensión del intérprete.
 
 Configura `.env` con `DB_HOST=127.0.0.1`, el puerto, usuario, contraseña y nombre de una base creada en MySQL. Ejecuta:
 
@@ -123,9 +132,7 @@ La carpeta contiene la configuración para un servidor o laboratorio virtual con
 6. Comprueba `/api/health`, inicia sesión y verifica las fotografías y los reportes desde otra computadora.
 7. Comparte esa URL durante la presentación.
 
-El manual incluye una configuración de proxy como referencia. No se contrataron servidores ni se inventó una URL PHP publicada: falta elegir/configurar el alojamiento de esa instancia.
-
-Para cambiar las contraseñas ya creadas, el script lee `NEW_PASSWORD` del entorno y recibe el correo como argumento. Por ejemplo, en la terminal del servidor:
+Para cambiar contraseñas usa **Usuarios → Restablecer contraseña** (la persona deberá cambiarla al ingresar) o, si no hay acceso, el script de emergencia:
 
 ```sh
 read -s NEW_PASSWORD
@@ -134,35 +141,26 @@ docker compose exec -e NEW_PASSWORD app php scripts/change_password.php admin@ca
 unset NEW_PASSWORD
 ```
 
-Repite para el árbitro. Cambiar únicamente `SEED_ADMIN_PASSWORD` después de la precarga no modifica un usuario existente.
-
-Los volúmenes `database`, `photographs` y `runtime` mantienen la información al detener la aplicación. `docker compose down` conserva esos volúmenes. Para reiniciar: `docker compose up -d`. Conserva una copia de la base y de las fotos antes de actualizar la instancia.
-
-## Demo de interfaz disponible
-
-https://cantera-sergio-demo.toastypoppy64.chatgpt.site
-
-Esta demo privada usa los mismos archivos de interfaz y datos ficticios, con almacenamiento en el navegador. El archivo `demo/demo-config.js` es el adaptador de demostración. La demo permite revisar los flujos, pero **no ejecuta PHP ni Phalcon** y no sustituye la URL PHP para la evaluación del framework. El proyecto de producción utiliza las rutas del servidor PHP y la base de datos.
+Los volúmenes `database`, `photographs` y `runtime` mantienen la información al detener la aplicación. `docker compose down` conserva esos volúmenes. Conserva una copia de la base y de las fotos antes de actualizar la instancia.
 
 ## Verificación
 
 ```sh
 docker compose run --rm --build test
+npm install --prefix tests
+npm --prefix tests test
+npm --prefix tests run e2e
 node tests/http-smoke.mjs http://localhost:8080
 ```
 
-`docker compose run --rm --build test` ejecuta PHPUnit (suites `Unit`, `Integration` y `Migration`); cada prueba usa su propia base SQLite temporal y la fecha congelada en 2026-10-16 09:00 (America/Guatemala). La prueba HTTP crea y elimina registros temporales; ejecútala en una instalación de prueba con las cuentas de demostración. SQLite es solo un adaptador de pruebas; la conexión por defecto y Docker usan MySQL.
+| Comando | Qué prueba |
+| --- | --- |
+| `docker compose run --rm --build test` | PHPUnit: suites `Unit`, `Integration` y `Migration`. Cada prueba usa su propia base SQLite y la fecha congelada en 2026-10-16 09:00 (America/Guatemala). |
+| `npm --prefix tests test` | Reglas del navegador con los mismos casos que PHP (node:test), interfaz con jsdom y API simulada, y que ningún tamaño de letra salga de la escala (stylelint). |
+| `npm --prefix tests run e2e` | Playwright en Chromium contra la aplicación real (servidor PHP aislado en Docker): flujos completos de clasificación, liga, validaciones y usuarios; accesibilidad con axe en modo claro y oscuro; diseño en teléfono. Primero: `npx --prefix tests playwright install chromium` y `docker build --target base -t cantera-base .`. |
+| `node tests/http-smoke.mjs <url>` | Rutas HTTP, roles, CSRF, fotografías, liga y cuentas sobre una instalación de prueba (crea y limpia registros temporales). |
 
-Pruebas de interfaz DOM opcionales, con Node.js:
-
-```sh
-npm install --prefix tests
-npm --prefix tests run dom
-```
-
-La suite DOM se ejecuta con `node tests/dom-test.mjs`; en la revisión actual pasaron 47 verificaciones. La suite PHP de integración, ejecutada en Docker contra SQLite temporal, pasó 72 verificaciones. El detalle consta en [docs/VERIFICACION.md](docs/VERIFICACION.md).
-
-La migración `006_match_workflow` incluye la tabla de eventos de gol que el detalle del partido utiliza para guardar y volver a mostrar cada gol. Desde **Ver partido** se consulta el enfrentamiento, se inicia cuando ya está programado y se registran goles durante el juego; esta captura no confirma el resultado ni avanza equipos.
+La integración continua (`.github/workflows/ci.yml`) ejecuta todo lo anterior y, además, migra una base **MySQL 8.4** real, comprueba la actualización desde la versión anterior (`tests/mysql/upgrade-check.php`) y corre la prueba HTTP contra MySQL. El detalle de la última verificación está en [docs/VERIFICACION.md](docs/VERIFICACION.md).
 
 ## Entrega académica
 

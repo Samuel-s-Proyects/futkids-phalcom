@@ -108,6 +108,8 @@ async function show(route, { refresh = false } = {}) {
   }
   renderBreadcrumb(section, route.params);
   document.title = `${section.label} · Cantera`;
+  // A temporary password must be replaced before anything else; navigation closes dialogs, so reopen it.
+  if (store.user.must_change_password && !$('#own-password-form')) openOwnPassword(true);
 }
 
 // ---- Session ------------------------------------------------------------------------------------
@@ -130,7 +132,6 @@ async function showApp() {
   $('#account-avatar').textContent = store.user.name.charAt(0).toUpperCase();
   if (!sectionFor(currentRoute().section)) go('panel');
   else show(currentRoute());
-  if (store.user.must_change_password) openOwnPassword(true);
 }
 
 function applySession(session) {

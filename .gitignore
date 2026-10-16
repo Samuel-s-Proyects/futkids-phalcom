@@ -9,3 +9,5 @@
 !.gitkeep
 
 .DS_Store
+/tests/test-results/
+/tests/playwright-report/

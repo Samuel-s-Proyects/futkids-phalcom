@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  PHP_EXTENSIONS: phalcon-5.22.1, pdo_sqlite, pdo_mysql, intl, gd, mbstring, fileinfo
+
 jobs:
   php:
     name: PHPUnit (SQLite)
@@ -13,16 +16,16 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: phalcon-5.22.1, pdo_sqlite, pdo_mysql, intl, gd, mbstring, fileinfo
+          extensions: ${{ env.PHP_EXTENSIONS }}
           tools: composer:v2
           coverage: none
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
-      - name: Run tests
+      - name: Unit, integration and migration tests
         run: composer test
 
-  node:
-    name: Front-end tests
+  frontend:
+    name: Front-end (node:test, jsdom, stylelint)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -33,3 +36,84 @@ jobs:
           cache-dependency-path: tests/package-lock.json
       - run: npm ci --prefix tests
       - run: npm --prefix tests test
+
+  mysql:
+    name: MySQL 8.4 (migrations and HTTP checks)
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: cantera
+          MYSQL_USER: cantera
+          MYSQL_PASSWORD: cantera-ci
+          MYSQL_ROOT_PASSWORD: root-ci
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=3s --health-retries=30
+    env:
+      DB_DRIVER: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '3306'
+      DB_NAME: cantera
+      DB_USER: cantera
+      DB_PASSWORD: cantera-ci
+      APP_ENV: development
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: composer install --no-interaction --no-progress
+      - name: Upgrade from the previous version keeps historic data
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot-ci -e "CREATE DATABASE cantera_upgrade; GRANT ALL ON cantera_upgrade.* TO 'cantera'@'%';"
+          DB_NAME=cantera_upgrade php tests/mysql/upgrade-check.php
+      - name: Migrate, seed and migrate again (must be idempotent)
+        run: php scripts/migrate.php && php scripts/seed.php && php scripts/migrate.php
+      - name: Start the application
+        run: |
+          mkdir -p var/session var/cache
+          php -S 127.0.0.1:8080 -t public public/router.php > var/server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8080/api/health && break; sleep 1; done
+      - name: HTTP checks against MySQL
+        run: node tests/http-smoke.mjs http://127.0.0.1:8080
+      - name: Server log
+        if: failure()
+        run: cat var/server.log
+
+  e2e:
+    name: End-to-end (Playwright)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - run: composer install --no-dev --no-interaction --no-progress
+      - run: npm ci --prefix tests
+      - run: npx --prefix tests playwright install --with-deps chromium
+      - name: Browser flows, accessibility and responsive layout
+        run: npm --prefix tests run e2e
+        env:
+          E2E_SERVER: native
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: tests/playwright-report
