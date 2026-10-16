@@ -125,6 +125,32 @@ La carpeta contiene la configuración para un servidor o laboratorio virtual con
 
 El manual incluye una configuración de proxy como referencia. No se contrataron servidores ni se inventó una URL PHP publicada: falta elegir/configurar el alojamiento de esa instancia.
 
+### Publicación en Railway
+
+`railway.json` indica a Railway que construya con `Dockerfile.railway`: un solo contenedor con Nginx y PHP-FPM que escucha en `$PORT`, aplica migraciones y carga los datos de demostración al arrancar.
+
+1. En el proyecto de Railway agrega una base **MySQL** (New → Database → MySQL).
+2. Agrega un servicio desde el repositorio de GitHub.
+3. En el servicio, crea un volumen montado en `/var/www/html/public/uploads` para conservar las fotografías.
+4. En **Variables** del servicio define:
+
+   | Variable | Valor |
+   | --- | --- |
+   | `DB_HOST` | `${{MySQL.MYSQLHOST}}` |
+   | `DB_PORT` | `${{MySQL.MYSQLPORT}}` |
+   | `DB_NAME` | `${{MySQL.MYSQLDATABASE}}` |
+   | `DB_USER` | `${{MySQL.MYSQLUSER}}` |
+   | `DB_PASSWORD` | `${{MySQL.MYSQLPASSWORD}}` |
+   | `APP_ENV` | `production` |
+   | `APP_TIMEZONE` | `America/Guatemala` |
+   | `SEED_ADMIN_PASSWORD` | contraseña propia del administrador |
+   | `SEED_REFEREE_PASSWORD` | contraseña propia del árbitro |
+
+   Opcionales: `AGE_MIN`, `AGE_MAX`, `AGE_REFERENCE_DATE`. No definas `PORT`; Railway lo asigna.
+5. En **Settings → Networking** pulsa *Generate Domain* y abre `https://<dominio>/api/health`.
+
+Las contraseñas `SEED_*` solo se usan en el primer arranque, cuando la base está vacía. Las sesiones se guardan dentro del contenedor, por lo que cada nuevo despliegue cierra las sesiones abiertas.
+
 Para cambiar las contraseñas ya creadas, el script lee `NEW_PASSWORD` del entorno y recibe el correo como argumento. Por ejemplo, en la terminal del servidor:
 
 ```sh
