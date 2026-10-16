@@ -1,0 +1,135 @@
+/*
+ * Design tokens. Every size, colour and spacing in the interface comes from here.
+ * Type scale (root 16px): nothing in the interface is smaller than --fs-xs (13px).
+ */
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    /* Typography */
+    --font-sans: Inter, "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    --fs-xs: 0.8125rem;   /* 13px: badges, captions, table headers */
+    --fs-sm: 0.875rem;    /* 14px: secondary text, hints, buttons */
+    --fs-md: 1rem;        /* 16px: body, inputs */
+    --fs-lg: 1.125rem;    /* 18px: card titles */
+    --fs-xl: 1.375rem;    /* 22px: dialog titles */
+    --fs-2xl: 1.75rem;    /* 28px: page titles */
+    --fs-3xl: 2.25rem;    /* 36px: hero numbers */
+    --lh-tight: 1.2;
+    --lh-normal: 1.5;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    /* Spacing (4px grid) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+
+    /* Shape and depth */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+    --shadow-1: 0 1px 2px rgb(16 40 34 / 0.06), 0 1px 3px rgb(16 40 34 / 0.08);
+    --shadow-2: 0 8px 28px rgb(16 40 34 / 0.12);
+    --tap-min: 44px;
+    --sidebar-width: 248px;
+    --content-max: 1280px;
+
+    /* Colour: light theme (all text pairs meet WCAG AA) */
+    --color-bg: #f4f7f6;
+    --color-surface: #ffffff;
+    --color-surface-2: #f0f4f2;
+    --color-text: #17302a;
+    --color-text-muted: #4d5e58;
+    --color-border: #d7e1dd;
+    --color-border-strong: #a9bab3;
+    --color-primary: #116750;
+    --color-primary-hover: #0c5341;
+    --color-primary-soft: #e3f3ec;
+    --color-on-primary: #ffffff;
+    --color-success: #13704f;
+    --color-success-soft: #e1f4ea;
+    --color-warning: #8a5a00;
+    --color-warning-soft: #fff3d6;
+    --color-danger: #b3261e;
+    --color-danger-soft: #fde8e6;
+    --color-on-strong: #ffffff;
+    --color-info: #1f5fa8;
+    --color-info-soft: #e5effb;
+    --color-focus: #2c8f6f;
+    --color-nav-bg: #122d29;
+    --color-nav-text: #c9dbd4;
+    --color-nav-text-strong: #ffffff;
+    --color-nav-active: #255046;
+    --color-overlay: rgb(10 24 20 / 0.55);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --color-bg: #0f1a17;
+      --color-surface: #16241f;
+      --color-surface-2: #1d2e28;
+      --color-text: #e5efeb;
+      --color-text-muted: #a9bcb5;
+      --color-border: #2c403a;
+      --color-border-strong: #4a6058;
+      --color-primary: #5ccfa6;
+      --color-primary-hover: #7edcba;
+      --color-primary-soft: #1d3a31;
+      --color-on-primary: #0b1a15;
+      --color-success: #6fd3a8;
+      --color-success-soft: #173a2c;
+      --color-warning: #f0c060;
+      --color-warning-soft: #3a2f14;
+      --color-danger: #ff8b80;
+      --color-danger-soft: #42201d;
+      --color-info: #8dbdf5;
+      --color-info-soft: #1b2d44;
+      --color-focus: #7edcba;
+      --color-nav-bg: #0b1512;
+      --color-nav-active: #1f3d35;
+      --color-overlay: rgb(0 0 0 / 0.65);
+      --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+      --shadow-2: 0 10px 30px rgb(0 0 0 / 0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #0f1a17;
+    --color-surface: #16241f;
+    --color-surface-2: #1d2e28;
+    --color-text: #e5efeb;
+    --color-text-muted: #a9bcb5;
+    --color-border: #2c403a;
+    --color-border-strong: #4a6058;
+    --color-primary: #5ccfa6;
+    --color-primary-hover: #7edcba;
+    --color-primary-soft: #1d3a31;
+    --color-on-primary: #0b1a15;
+    --color-success: #6fd3a8;
+    --color-success-soft: #173a2c;
+    --color-warning: #f0c060;
+    --color-warning-soft: #3a2f14;
+    --color-danger: #ff8b80;
+    --color-danger-soft: #42201d;
+    --color-info: #8dbdf5;
+    --color-info-soft: #1b2d44;
+    --color-focus: #7edcba;
+    --color-nav-bg: #0b1512;
+    --color-nav-active: #1f3d35;
+    --color-overlay: rgb(0 0 0 / 0.65);
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 10px 30px rgb(0 0 0 / 0.5);
+  }
+}

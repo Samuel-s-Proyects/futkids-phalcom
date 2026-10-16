@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-class Goal extends \Phalcon\Mvc\Model
+class Goal extends Model
 {
     public $id;
     public $player_id;

@@ -1,0 +1,18 @@
+ALTER TABLE tournaments
+    ADD COLUMN type VARCHAR(20) NOT NULL DEFAULT 'knockout',
+    ADD COLUMN league_rounds INTEGER NULL,
+    ADD COLUMN points_win INTEGER NOT NULL DEFAULT 3,
+    ADD COLUMN points_draw INTEGER NOT NULL DEFAULT 1,
+    ADD COLUMN points_loss INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN match_duration_minutes INTEGER NOT NULL DEFAULT 60,
+    ADD COLUMN is_legacy TINYINT NOT NULL DEFAULT 0,
+    ADD COLUMN fixture_generated_at DATETIME NULL,
+    ADD COLUMN started_at DATETIME NULL,
+    ADD COLUMN finished_at DATETIME NULL,
+    ADD COLUMN champion_team_id INTEGER NULL,
+    ADD CONSTRAINT fk_tournament_champion FOREIGN KEY (champion_team_id) REFERENCES teams(id) ON DELETE RESTRICT,
+    ADD CONSTRAINT chk_tournament_type CHECK (type IN ('knockout','league')),
+    ADD CONSTRAINT chk_tournament_league_rounds CHECK (league_rounds IS NULL OR league_rounds IN (1,2)),
+    ADD CONSTRAINT chk_tournament_points CHECK (points_win BETWEEN 0 AND 10 AND points_draw BETWEEN 0 AND 10 AND points_loss BETWEEN 0 AND 10),
+    ADD CONSTRAINT chk_tournament_duration CHECK (match_duration_minutes BETWEEN 10 AND 180),
+    ADD CONSTRAINT chk_tournament_legacy CHECK (is_legacy IN (0,1));

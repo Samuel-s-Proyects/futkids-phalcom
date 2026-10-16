@@ -1,0 +1,19 @@
+@layer utilities {
+  @media print {
+    @page { margin: 14mm; }
+    body { background: white; color: black; font-size: 11pt; }
+    .sidebar, .topbar, .main-footer, .toolbar, .report-filters, .page-header__actions, .tabs,
+    .row-actions, .dialog__footer, .button, .icon-button, .toast, .sidebar-backdrop { display: none !important; }
+    .workspace { margin: 0; }
+    main { padding: 0; max-width: none; }
+    .card { border: 0; box-shadow: none; padding: 0; }
+    .print-only { display: block; margin-bottom: 8mm; }
+    .print-only h1 { font-size: 16pt; }
+    .table { font-size: 10pt; }
+    .table th { position: static; background: none; color: black; font-size: 9pt; border-bottom: 1pt solid black; }
+    .table td { border-top: 0.5pt solid gray; }
+    .badge { border: 0.5pt solid black; background: none; color: black; font-size: 9pt; }
+    dialog[open] { position: static; width: auto; max-height: none; box-shadow: none; }
+    body:has(dialog[open]) .app-shell { display: none; }
+  }
+}

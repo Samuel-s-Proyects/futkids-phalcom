@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-class TournamentMatchPeriodScore extends \Phalcon\Mvc\Model
+class TournamentMatchPeriodScore extends Model
 {
     public $id;
     public $tournament_match_id;

@@ -1,0 +1,18 @@
+{
+  "person_name": {
+    "valid": ["José", "Ñúñez", "María José", "O'Brien", "D’Ávila", "Jean-Luc", "Zoë", "Àlex"],
+    "invalid": ["Juan1", "Ana  María", " Ana", "Ana ", "-Ana", "Ana-", "O''Brien", "Ana_María", "<script>", "Ana@", "😀", "Ana.", ""]
+  },
+  "title": {
+    "valid": ["Leones de Petapa", "Sub-12", "Cancha 2 Las Palmas", "Sto. Domingo", "Copa Apertura 2026", "Estadio Nacional, zona 1", "Club Atlético Ñandú", "Cancha 2."],
+    "invalid": ["Cancha #1", "Copa <b>", "Equipo @", "Equipo & Cía", "100%", "A/B", "Copa  2026", " Copa", "Copa_2026", "😀 Copa", "Copa!!", ""]
+  },
+  "description": {
+    "valid": ["Falta táctica en el minuto 20.", "Juego brusco (segunda amarilla).", "¿Mano? Sí, revisada: tarjeta.", "Línea 1\nLínea 2", "«Protesta» al árbitro; reincidente!"],
+    "invalid": ["<script>alert(1)</script>", "Ver http://x.com/y", "Correo a@b.com", "Precio $5", "50% de faltas", "a = b", "{json}", "[nota]", "uno | dos", "~"]
+  },
+  "digits": {
+    "valid": ["0", "7", "99", "150"],
+    "invalid": ["-1", "+5", " 5", "5.0", "1e3", "5a", "", "٣"]
+  }
+}

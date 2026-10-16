@@ -36,6 +36,17 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+  # Automated tests (PHPUnit on isolated SQLite databases): docker compose run --rm --build test
+  test:
+    profiles: ["test"]
+    build:
+      context: .
+      target: test
+    environment:
+      APP_ENV: testing
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
   web:
     image: nginx:1.28-alpine
     ports:

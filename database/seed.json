@@ -223,29 +223,77 @@
       "position": "Delantero"
     }
   ],
+  "tournaments": [
+    {
+      "id": 1,
+      "name": "Torneo histórico 2026",
+      "type": "league",
+      "start_date": "2026-10-03",
+      "end_date": "2026-10-31",
+      "status": "finished",
+      "draw_method": "manual",
+      "league_rounds": 1,
+      "points_win": 3,
+      "points_draw": 1,
+      "points_loss": 0,
+      "match_duration_minutes": 60,
+      "is_legacy": 1,
+      "registrations_closed_at": "2026-10-03 00:00:00",
+      "fixture_generated_at": "2026-10-03 00:00:00",
+      "started_at": "2026-10-03 00:00:00",
+      "finished_at": "2026-10-31 23:59:59"
+    }
+  ],
+  "tournament_teams": [
+    {
+      "tournament_id": 1,
+      "team_id": 1,
+      "seed_order": 1
+    },
+    {
+      "tournament_id": 1,
+      "team_id": 2,
+      "seed_order": 2
+    },
+    {
+      "tournament_id": 1,
+      "team_id": 3,
+      "seed_order": 3
+    },
+    {
+      "tournament_id": 1,
+      "team_id": 4,
+      "seed_order": 4
+    }
+  ],
   "matchdays": [
     {
       "id": 1,
+      "tournament_id": 1,
       "number": 1,
       "game_date": "2026-10-03"
     },
     {
       "id": 2,
+      "tournament_id": 1,
       "number": 2,
       "game_date": "2026-10-10"
     },
     {
       "id": 3,
+      "tournament_id": 1,
       "number": 3,
       "game_date": "2026-10-17"
     },
     {
       "id": 4,
+      "tournament_id": 1,
       "number": 4,
       "game_date": "2026-10-24"
     },
     {
       "id": 5,
+      "tournament_id": 1,
       "number": 5,
       "game_date": "2026-10-31"
     }

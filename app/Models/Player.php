@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-class Player extends \Phalcon\Mvc\Model
+class Player extends Model
 {
     public $id;
     public $first_name;

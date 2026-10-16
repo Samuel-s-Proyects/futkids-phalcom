@@ -147,11 +147,11 @@ Esta demo privada usa los mismos archivos de interfaz y datos ficticios, con alm
 ## Verificación
 
 ```sh
-docker compose exec app php tests/integration.php
+docker compose run --rm --build test
 node tests/http-smoke.mjs http://localhost:8080
 ```
 
-La prueba HTTP crea y elimina registros temporales; ejecútala en una instalación de prueba con las cuentas de demostración. La prueba de negocio usa una base SQLite temporal aislada. SQLite es solo un adaptador de pruebas; la conexión por defecto y Docker usan MySQL.
+`docker compose run --rm --build test` ejecuta PHPUnit (suites `Unit`, `Integration` y `Migration`); cada prueba usa su propia base SQLite temporal y la fecha congelada en 2026-10-16 09:00 (America/Guatemala). La prueba HTTP crea y elimina registros temporales; ejecútala en una instalación de prueba con las cuentas de demostración. SQLite es solo un adaptador de pruebas; la conexión por defecto y Docker usan MySQL.
 
 Pruebas de interfaz DOM opcionales, con Node.js:
 

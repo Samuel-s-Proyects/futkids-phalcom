@@ -15,6 +15,8 @@ $env = static fn(string $key, string $default): string => getenv($key) !== false
 return [
     'environment' => $env('APP_ENV', 'development'),
     'timezone' => $env('APP_TIMEZONE', 'America/Guatemala'),
+    // Only honoured when APP_ENV=testing: freezes "now" (e.g. 2026-10-16T09:00:00) for automated tests.
+    'fixed_now' => $env('APP_FIXED_NOW', ''),
     'database' => [
         'driver' => $env('DB_DRIVER', 'mysql'), 'host' => $env('DB_HOST', 'db'),
         'port' => (int)$env('DB_PORT', '3306'), 'dbname' => $env('DB_NAME', 'cantera'),

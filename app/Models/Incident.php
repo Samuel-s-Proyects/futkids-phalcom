@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-class Incident extends \Phalcon\Mvc\Model
+class Incident extends Model
 {
     public $id;
     public $player_id;

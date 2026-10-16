@@ -1,0 +1,11 @@
+ALTER TABLE tournaments ADD COLUMN type VARCHAR(20) NOT NULL DEFAULT 'knockout' CHECK (type IN ('knockout','league'));
+ALTER TABLE tournaments ADD COLUMN league_rounds INTEGER NULL CHECK (league_rounds IS NULL OR league_rounds IN (1,2));
+ALTER TABLE tournaments ADD COLUMN points_win INTEGER NOT NULL DEFAULT 3 CHECK (points_win BETWEEN 0 AND 10);
+ALTER TABLE tournaments ADD COLUMN points_draw INTEGER NOT NULL DEFAULT 1 CHECK (points_draw BETWEEN 0 AND 10);
+ALTER TABLE tournaments ADD COLUMN points_loss INTEGER NOT NULL DEFAULT 0 CHECK (points_loss BETWEEN 0 AND 10);
+ALTER TABLE tournaments ADD COLUMN match_duration_minutes INTEGER NOT NULL DEFAULT 60 CHECK (match_duration_minutes BETWEEN 10 AND 180);
+ALTER TABLE tournaments ADD COLUMN is_legacy INTEGER NOT NULL DEFAULT 0 CHECK (is_legacy IN (0,1));
+ALTER TABLE tournaments ADD COLUMN fixture_generated_at DATETIME NULL;
+ALTER TABLE tournaments ADD COLUMN started_at DATETIME NULL;
+ALTER TABLE tournaments ADD COLUMN finished_at DATETIME NULL;
+ALTER TABLE tournaments ADD COLUMN champion_team_id INTEGER NULL REFERENCES teams(id) ON DELETE RESTRICT;

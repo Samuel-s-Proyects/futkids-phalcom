@@ -1,0 +1,18 @@
+{
+  "person_name": {
+    "pattern": "^[\\p{L}\\p{M}]+(?:(?: |[\\-'’])[\\p{L}\\p{M}]+)*$",
+    "message": "Use solo letras; puede separar palabras con espacio, guion o apóstrofo."
+  },
+  "title": {
+    "pattern": "^[\\p{L}\\p{M}\\p{N}]+(?:(?:[\\-'’.,] ?| )[\\p{L}\\p{M}\\p{N}]+)*\\.?$",
+    "message": "Use letras y números; puede separar palabras con espacio, guion, punto, coma o apóstrofo."
+  },
+  "description": {
+    "pattern": "^[\\p{L}\\p{M}\\p{N}\\s\\-'’.,;:¿?¡!\\(\\)\"«»]+$",
+    "message": "Use letras, números y signos de puntuación comunes (no se permiten < > { } [ ] / \\ @ # $ % ^ * = + | ~)."
+  },
+  "digits": {
+    "pattern": "^[0-9]+$",
+    "message": "Escriba solo números, sin signos ni espacios."
+  }
+}

@@ -1,117 +1,107 @@
 <?php
 namespace App\Controllers;
+
+use App\Exceptions\HttpException;
+
+/** Tournament configuration and registration. Every change answers with the refreshed tournament. */
 class TournamentsController extends ApiController
 {
-    private function positiveInteger(mixed $value, string $field): int {
-        if (!is_scalar($value) || filter_var($value, FILTER_VALIDATE_INT) === false || (int)$value < 1) throw new \App\Exceptions\HttpException('Dato numérico inválido.', 422, [$field => 'Ingrese un entero positivo.']);
-        return (int)$value;
-    }
     public function listAction() {
         $this->requireAccess();
-        return $this->json(['items' => $this->tournament->tournaments()]);
+        return $this->json(['items' => $this->tournaments->list()]);
     }
-    public function saveAction() {
-        $this->requireAccess(true);
-        $id = (int)$this->dispatcher->getParam('id', 'int', 0);
-        return $this->json(['record' => $this->tournament->saveTournament($this->input(), $id)], $id ? 200 : 201);
-    }
+
     public function detailAction() {
         $this->requireAccess();
-        return $this->json($this->tournament->tournament((int)$this->dispatcher->getParam('id', 'int')));
+        return $this->json($this->tournaments->detail($this->routeId('id')));
     }
+
+    public function saveAction() {
+        $this->requireAccess(true);
+        $id = $this->dispatcher->getParam('id') === null ? 0 : $this->routeId('id');
+        $record = $this->transactional(fn() => $this->tournaments->save($this->input(), $id));
+        return $this->json(['record' => $this->tournaments->detail((int)$record['id'])], $id ? 200 : 201);
+    }
+
     public function openRegistrationAction() {
-        $this->requireAccess(true);
-        return $this->json(['record' => $this->tournament->openRegistration((int)$this->dispatcher->getParam('id', 'int'))]);
+        return $this->change(fn(int $id) => $this->tournaments->openRegistration($id));
     }
+
     public function enrollAction() {
-        $this->requireAccess(true);
-        $data = $this->input();
-        $teamId = $this->positiveInteger($data['team_id'] ?? null, 'team_id');
-        return $this->json(['record' => $this->tournament->enrollTeam((int)$this->dispatcher->getParam('id', 'int'), $teamId)], 201);
+        $teamId = $this->input()['team_id'] ?? null;
+        if (!is_scalar($teamId) || !ctype_digit((string)$teamId)) throw new HttpException('Seleccione un equipo.', 422, ['team_id' => 'Seleccione un equipo de la lista.']);
+        return $this->change(fn(int $id) => $this->tournaments->enroll($id, (int)$teamId), 201);
     }
+
     public function removeParticipantAction() {
-        $this->requireAccess(true);
-        $this->tournament->removeParticipant((int)$this->dispatcher->getParam('id', 'int'), (int)$this->dispatcher->getParam('teamId', 'int'));
-        return $this->json(['message' => 'Inscripción retirada.']);
+        $teamId = $this->routeId('teamId');
+        return $this->change(fn(int $id) => $this->tournaments->removeParticipant($id, $teamId));
     }
+
     public function orderParticipantsAction() {
-        $this->requireAccess(true);
-        $data = $this->input();
-        if (!isset($data['team_ids']) || !is_array($data['team_ids'])) throw new \App\Exceptions\HttpException('Envíe la lista ordenada de equipos.', 422, ['team_ids' => 'Lista obligatoria.']);
-        return $this->json(['record' => $this->tournament->orderParticipants((int)$this->dispatcher->getParam('id', 'int'), $data['team_ids'])]);
+        $teamIds = $this->input()['team_ids'] ?? null;
+        if (!is_array($teamIds) || !array_is_list($teamIds)) throw new HttpException('Envíe la lista ordenada de equipos.', 422, ['team_ids' => 'Lista obligatoria.']);
+        return $this->change(fn(int $id) => $this->tournaments->orderParticipants($id, $teamIds));
     }
+
     public function closeRegistrationAction() {
-        $this->requireAccess(true);
-        $data = $this->input();
-        if (!isset($data['draw_method']) || !is_string($data['draw_method'])) throw new \App\Exceptions\HttpException('Seleccione cómo ordenar los equipos.', 422, ['draw_method' => 'Seleccione sorteo aleatorio u orden manual.']);
-        return $this->json(['record' => $this->tournament->closeRegistration((int)$this->dispatcher->getParam('id', 'int'), $data['draw_method'])]);
+        $method = $this->input()['draw_method'] ?? null;
+        return $this->change(fn(int $id) => $this->tournaments->closeRegistration($id, $method));
     }
+
     public function generateBracketAction() {
+        return $this->change(fn(int $id) => $this->tournaments->generateBracket($id));
+    }
+
+    /** Proposed league calendar for the given first date and interval (nothing is saved). */
+    public function fixturePreviewAction() {
         $this->requireAccess(true);
-        return $this->json(['record' => $this->tournament->generateBracket((int)$this->dispatcher->getParam('id', 'int'))]);
+        return $this->json(['preview' => $this->tournaments->previewFixture($this->routeId('id'), $this->input())]);
     }
-    public function scheduleMatchAction() {
-        $actor = $this->requireAccess(true);
-        $data = $this->input();
-        if (!isset($data['scheduled_at']) || !is_string($data['scheduled_at'])) throw new \App\Exceptions\HttpException('Seleccione la fecha y hora del partido.', 422, ['scheduled_at' => 'Campo obligatorio.']);
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        return $this->json(['record' => $this->tournament->scheduleMatch((int)$this->dispatcher->getParam('id', 'int'), $matchId, $data['scheduled_at'], $data, (int)$actor['id'])]);
+
+    public function generateFixtureAction() {
+        $input = $this->input();
+        return $this->change(fn(int $id) => $this->tournaments->generateFixture($id, $input), 201);
     }
-    public function startMatchAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        return $this->json(['record' => $this->tournament->startMatch((int)$this->dispatcher->getParam('id', 'int'), $matchId, (int)$actor['id'])]);
+
+    public function standingsAction() {
+        $this->requireAccess();
+        return $this->json(['rows' => $this->tournaments->standings($this->routeId('id'))]);
     }
-    public function recordMatchGoalAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        return $this->json(['record' => $this->tournament->recordMatchGoal((int)$this->dispatcher->getParam('id', 'int'), $matchId, (int)$actor['id'], $this->input())], 201);
+
+    public function addMatchdayAction() {
+        $input = $this->input();
+        return $this->change(fn(int $id) => $this->tournaments->addExtraordinaryMatchday($id, $input), 201);
     }
-    public function recordMatchResultAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        $data = $this->input();
-        $data['actor_user_id'] = (int)$actor['id'];
-        return $this->json(['record' => $this->tournament->recordMatchResult((int)$this->dispatcher->getParam('id', 'int'), $matchId, $data)]);
+
+    public function updateMatchdayAction() {
+        $input = $this->input();
+        $matchdayId = $this->routeId('matchdayId');
+        return $this->change(fn(int $id) => $this->tournaments->updateMatchday($id, $matchdayId, $input));
     }
-    public function reviseMatchResultAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        $data = $this->input();
-        $data['actor_user_id'] = (int)$actor['id'];
-        return $this->json(['record' => $this->tournament->recordMatchResult((int)$this->dispatcher->getParam('id', 'int'), $matchId, $data, false, true)]);
+
+    public function deleteMatchdayAction() {
+        $matchdayId = $this->routeId('matchdayId');
+        return $this->change(fn(int $id) => $this->tournaments->deleteMatchday($id, $matchdayId));
     }
-    public function confirmMatchResultAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        return $this->json(['record' => $this->tournament->confirmMatchResult((int)$this->dispatcher->getParam('id', 'int'), $matchId, (int)$actor['id'])]);
+
+    public function extendEndDateAction() {
+        $input = $this->input();
+        return $this->change(fn(int $id) => $this->tournaments->extendEndDate($id, $input));
     }
-    public function correctMatchResultAction() {
-        $actor = $this->requireAccess(true);
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        $data = $this->input();
-        $data['actor_user_id'] = (int)$actor['id'];
-        return $this->json(['record' => $this->tournament->recordMatchResult((int)$this->dispatcher->getParam('id', 'int'), $matchId, $data, true)]);
+
+    public function scorersAction() {
+        $this->requireAccess();
+        $id = $this->routeId('id');
+        $this->tournaments->find($id);
+        return $this->json(['rows' => $this->tournaments->scorers($id)]);
     }
-    public function saveMatchIncidentAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        $incidentId = (int)$this->dispatcher->getParam('incidentId', 'int', 0);
-        if ($incidentId) $incidentId = $this->positiveInteger($incidentId, 'incidentId');
-        return $this->json(['record' => $this->tournament->saveMatchIncident((int)$this->dispatcher->getParam('id', 'int'), $matchId, (int)$actor['id'], $this->input(), $incidentId)], $incidentId ? 200 : 201);
-    }
-    public function deleteMatchIncidentAction() {
-        $actor = $this->requireAccess();
-        $this->verifyCsrf();
-        $matchId = $this->positiveInteger($this->dispatcher->getParam('matchId', 'int'), 'matchId');
-        $incidentId = $this->positiveInteger($this->dispatcher->getParam('incidentId', 'int'), 'incidentId');
-        $this->tournament->deleteMatchIncident((int)$this->dispatcher->getParam('id', 'int'), $matchId, (int)$actor['id'], $incidentId);
-        return $this->json(['message' => 'Incidencia eliminada.']);
+
+    /** Administrator change on the tournament in the route, answered with the refreshed tournament. */
+    private function change(callable $operation, int $status = 200) {
+        $this->requireAccess(true);
+        $id = $this->routeId('id');
+        $this->transactional(fn() => $operation($id));
+        return $this->json(['record' => $this->tournaments->detail($id)], $status);
     }
 }

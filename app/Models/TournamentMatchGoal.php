@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-class TournamentMatchGoal extends \Phalcon\Mvc\Model
+class TournamentMatchGoal extends Model
 {
     public $id;
     public $tournament_match_id;

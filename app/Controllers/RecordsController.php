@@ -1,16 +1,19 @@
 <?php
 namespace App\Controllers;
+
 use App\Services\PhotoStorage;
+
 class RecordsController extends ApiController
 {
     public function stateAction() {
         $this->requireAccess();
-        return $this->json($this->tournament->state());
+        return $this->json($this->state->state());
     }
+
     public function listAction() {
         $this->requireAccess();
         $entity = $this->dispatcher->getParam('entity');
-        $rows = $this->tournament->state()[$entity];
+        $rows = $this->state->state()[$entity];
         $search = mb_strtolower(trim((string)$this->request->getQuery('q')));
         $team = (int)$this->request->getQuery('team_id', 'int');
         $rows = array_values(array_filter($rows, function ($row) use ($search, $team) {
@@ -21,21 +24,28 @@ class RecordsController extends ApiController
         $page = $paginator->paginate();
         return $this->json(['items' => $page->getItems(), 'total' => $page->getTotalItems(), 'pages' => $page->getLast(), 'page' => $page->getCurrent()]);
     }
+
     public function saveAction() {
         $this->requireAccess(true);
         $entity = $this->dispatcher->getParam('entity');
-        $id = (int)$this->dispatcher->getParam('id', 'int', 0);
+        $id = $this->dispatcher->getParam('id') === null ? 0 : $this->routeId('id');
         $data = $this->input();
         $photo = $entity === 'players' ? PhotoStorage::store($this->request) : null;
-        if ($photo) $data['photo_path'] = $photo;
-        $removePhoto = $entity === 'players' && $id > 0 && !$photo && isset($data['remove_photo']) && is_scalar($data['remove_photo']) && (string)$data['remove_photo'] === '1';
-        try { $row = $this->tournament->save($entity, $data, $id, (bool)$photo, $removePhoto); }
-        catch (\Throwable $e) { if ($photo) PhotoStorage::remove($photo); throw $e; }
+        $removePhoto = $entity === 'players' && $id > 0 && !$photo && (string)($data['remove_photo'] ?? '') === '1';
+        try {
+            $row = $this->transactional(fn() => $this->catalog->save($entity, $data, $id, $photo, $removePhoto));
+        } catch (\Throwable $e) {
+            if ($photo) PhotoStorage::remove($photo);
+            throw $e;
+        }
         return $this->json(['record' => $row, 'message' => 'Registro guardado.'], $id ? 200 : 201);
     }
+
     public function deleteAction() {
         $this->requireAccess(true);
-        $this->tournament->delete($this->dispatcher->getParam('entity'), (int)$this->dispatcher->getParam('id'));
+        $entity = $this->dispatcher->getParam('entity');
+        $id = $this->routeId('id');
+        $this->transactional(fn() => $this->catalog->delete($entity, $id));
         return $this->json(['message' => 'Registro eliminado.']);
     }
 }
