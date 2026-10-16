@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-enable phalcon \
     && rm -rf /var/lib/apt/lists/* /tmp/phalcon.tgz
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
-COPY docker/php.ini /usr/local/etc/php/conf.d/cantera.ini
+COPY docker/php.ini /usr/local/etc/php/conf.d/futkids.ini
 WORKDIR /var/www/html
 
 # Test image: development dependencies (PHPUnit). Used by `docker compose run --rm test`.
@@ -29,7 +29,7 @@ COPY . .
 RUN composer install --no-dev --no-interaction --optimize-autoloader \
     && mkdir -p var/cache var/session var/log public/uploads/players \
     && chown -R www-data:www-data var public/uploads
-COPY docker/entrypoint.sh /usr/local/bin/cantera-entrypoint
-RUN chmod +x /usr/local/bin/cantera-entrypoint
-ENTRYPOINT ["cantera-entrypoint"]
+COPY docker/entrypoint.sh /usr/local/bin/futkids-entrypoint
+RUN chmod +x /usr/local/bin/futkids-entrypoint
+ENTRYPOINT ["futkids-entrypoint"]
 CMD ["php-fpm"]

@@ -52,8 +52,6 @@ export function renderTournamentDetail(main, tabKey = 'resumen') {
     + `<section aria-label="${esc(available.find(item => item.key === tab).label)}">${body}</section>`;
 }
 
-// ---- Progress -----------------------------------------------------------------------------------
-
 const NEXT_ACTIONS = {
   'open-registration': { action: 'open-registration', iconName: 'teams' },
   'close-registration': { tab: 'equipos', iconName: 'check' },
@@ -78,8 +76,6 @@ function progressCard(t) {
   }
   return `<div class="card stack page-section">${stepper(lifecycle.steps)}${champion || `<div class="next-step">${next}</div>`}</div>`;
 }
-
-// ---- Summary ------------------------------------------------------------------------------------
 
 function summaryTab(t) {
   const league = t.type === 'league';
@@ -123,8 +119,6 @@ export function matchList(matches) {
   }).join('')}</ul>`;
 }
 
-// ---- Teams --------------------------------------------------------------------------------------
-
 function teamsTab(t) {
   const open = t.status === 'registration' && !t.registrations_closed_at;
   const editable = open && isAdmin();
@@ -161,8 +155,6 @@ function teamsTab(t) {
   </div>`;
 }
 
-// ---- Bracket ------------------------------------------------------------------------------------
-
 function bracketTab(t) {
   if (!t.matches.length) {
     return `<div class="card">${emptyState('El cuadro aún no se ha generado', t.registrations_closed_at ? 'Use «Generar cuadro» en la parte superior.' : 'Primero inscriba a los equipos y cierre la inscripción.', 'trophy')}</div>`;
@@ -193,8 +185,6 @@ function matchCard(m) {
   </button>`;
 }
 
-// ---- Scorers ------------------------------------------------------------------------------------
-
 function scorersTab(t) {
   if (!t.scorers.length) return `<div class="card">${emptyState('Todavía no hay goles', 'La tabla se llena con los goles de los partidos de este torneo. Los autogoles no cuentan.', 'ball')}</div>`;
   return `<div class="card card--flush"><div class="card__header"><div><h2>Goleadores del torneo</h2><p class="card__subtitle">Incluye resultados por confirmar. Los autogoles no se atribuyen a nadie.</p></div></div>`
@@ -203,8 +193,6 @@ function scorersTab(t) {
       return [`<span class="rank">${index + 1}</span>`, `<span class="person">${avatar(scorer)}<strong>${esc(fullName(scorer))}</strong></span>`, esc(team(row.team_id)?.name), `<strong>${row.goals}</strong>`];
     }), { caption: 'Goleadores del torneo' }) + '</div>';
 }
-
-// ---- Actions ------------------------------------------------------------------------------------
 
 /** Runs a tournament change and redraws the page with the refreshed detail. */
 export async function tournamentChange(path, { method = 'POST', body = {}, message }) {

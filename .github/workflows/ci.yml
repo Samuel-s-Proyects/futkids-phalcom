@@ -44,9 +44,9 @@ jobs:
       mysql:
         image: mysql:8.4
         env:
-          MYSQL_DATABASE: cantera
-          MYSQL_USER: cantera
-          MYSQL_PASSWORD: cantera-ci
+          MYSQL_DATABASE: futkids
+          MYSQL_USER: futkids
+          MYSQL_PASSWORD: futkids-ci
           MYSQL_ROOT_PASSWORD: root-ci
         ports: ['3306:3306']
         options: >-
@@ -56,9 +56,9 @@ jobs:
       DB_DRIVER: mysql
       DB_HOST: 127.0.0.1
       DB_PORT: '3306'
-      DB_NAME: cantera
-      DB_USER: cantera
-      DB_PASSWORD: cantera-ci
+      DB_NAME: futkids
+      DB_USER: futkids
+      DB_PASSWORD: futkids-ci
       APP_ENV: development
     steps:
       - uses: actions/checkout@v4
@@ -74,8 +74,8 @@ jobs:
       - run: composer install --no-interaction --no-progress
       - name: Upgrade from the previous version keeps historic data
         run: |
-          mysql -h 127.0.0.1 -uroot -proot-ci -e "CREATE DATABASE cantera_upgrade; GRANT ALL ON cantera_upgrade.* TO 'cantera'@'%';"
-          DB_NAME=cantera_upgrade php tests/mysql/upgrade-check.php
+          mysql -h 127.0.0.1 -uroot -proot-ci -e "CREATE DATABASE futkids_upgrade; GRANT ALL ON futkids_upgrade.* TO 'futkids'@'%';"
+          DB_NAME=futkids_upgrade php tests/mysql/upgrade-check.php
       - name: Migrate, seed and migrate again (must be idempotent)
         run: php scripts/migrate.php && php scripts/seed.php && php scripts/migrate.php
       - name: Start the application

@@ -1,10 +1,10 @@
-# Cantera · Torneo infantil
+# FutKids · La liga de las futuras estrellas
 
 Aplicación real en **PHP 8.3 y Phalcon 5.22.1**, con MVC, modelos ORM, vistas Volt y MySQL/MariaDB. Gestiona torneos de **clasificación** (eliminación directa) y **por puntos** (liga por jornadas), equipos, jugadores con fotografía, partidos con hoja de goles, tarjetas y suspensiones, reportes, y cuentas de administradores y árbitros.
 
 ## Inicio rápido en Mac o Windows
 
-Con Docker Desktop instalado y abierto, descomprime la entrega y entra a la carpeta `cantera-phalcon`:
+Con Docker Desktop instalado y abierto, descomprime la entrega y entra a la carpeta del proyecto:
 
 ```sh
 cp .env.example .env
@@ -29,14 +29,14 @@ curl http://localhost:8080/api/health
 
 La respuesta de salud debe mostrar `status: ok` y `Phalcon 5.22.1`. Si el puerto 8080 está ocupado, cambia `APP_PORT` en `.env` y vuelve a ejecutar `docker compose up -d`.
 
-> **Actualización de una instalación anterior.** Respalda el volumen `database` antes de actualizar. Al iniciar, las migraciones 008 a 012 convierten los datos existentes: los resultados quedan guardados en cada partido, los goles registrados dos veces por el flujo anterior se depuran (y quedan en el historial del partido), y las jornadas y goles globales pasan a un «Torneo histórico» de solo consulta.
+> **Actualización de una instalación anterior.** Respalda el volumen `database` antes de actualizar. Al iniciar, las migraciones 008 a 012 convierten los datos existentes: los resultados quedan guardados en cada partido, los goles registrados dos veces por el flujo anterior se depuran (y quedan en el historial del partido), y las jornadas y goles globales pasan a un «Torneo histórico» de solo consulta. La migración 013 cambia las cuentas `@cantera.local` del nombre anterior del proyecto a `@futkids.local`; sus contraseñas no cambian, así que restablécelas desde **Usuarios** o con `scripts/change_password.php`. Los valores por defecto de la base local también cambiaron a `futkids`: si tu volumen se creó con los anteriores, conserva en `.env` los `DB_*` que usabas.
 
 ## Cuentas de prueba
 
 | Cuenta | Correo | Contraseña | Permisos |
 | --- | --- | --- | --- |
-| Administrador | admin@cantera.local | Cantera2026! | Configura torneos, catálogo y usuarios |
-| Árbitro | arbitro@cantera.local | Arbitro2026! | Consulta todo; registra goles, tarjetas y resultados de sus partidos |
+| Administrador | admin@futkids.local | FutKids2026! | Configura torneos, catálogo y usuarios |
+| Árbitro | arbitro@futkids.local | Arbitro2026! | Consulta todo; registra goles, tarjetas y resultados de sus partidos |
 
 Los botones del acceso rellenan estas credenciales cuando `APP_ENV=development`. En producción se ocultan. Las contraseñas se almacenan con hash de Phalcon. Desde **Usuarios** un administrador crea más administradores o árbitros.
 
@@ -82,7 +82,7 @@ Los reportes ofrecen CSV y **Imprimir o PDF** (diálogo de impresión del navega
 
 ## Interfaz
 
-Diseño propio con tokens (`public/css/tokens.css`): escala tipográfica en `rem` cuyo tamaño mínimo es 13 px, colores con contraste AA, **modo oscuro** (automático o con el botón de la barra superior), menú lateral que en el teléfono se abre como panel con fondo, y formularios a una columna en pantallas pequeñas. Cada pantalla tiene su dirección (`#torneos/3/tabla`), de modo que recargar y volver atrás funcionan.
+Diseño propio con tokens (`public/css/tokens.css`): acento amarillo sobre tarjetas blancas, tipografía Poppins y los íconos de [Lucide](https://lucide.dev) (licencia ISC), ambos guardados en el proyecto porque la política de seguridad solo admite archivos propios. Escala tipográfica en `rem` cuyo tamaño mínimo es 13 px, colores con contraste AA, **modo oscuro** (automático o con el botón de la barra superior), menú lateral que en el teléfono se abre como panel con fondo, y formularios a una columna en pantallas pequeñas. Cada pantalla tiene su dirección (`#torneos/3/tabla`), de modo que recargar y volver atrás funcionan.
 
 ## Estructura y uso de Phalcon
 
@@ -124,7 +124,7 @@ El servidor incorporado de PHP sirve para desarrollo. Para publicar utiliza PHP-
 
 La carpeta contiene la configuración para un servidor o laboratorio virtual con Docker. Para completar la URL de la presentación:
 
-1. Copia `cantera-phalcon` a ese servidor y configura `.env` con contraseñas propias.
+1. Copia la carpeta del proyecto a ese servidor y configura `.env` con contraseñas propias.
 2. Usa `APP_ENV=production`; las cookies requieren HTTPS en este modo.
 3. Ejecuta `docker compose up --build -d`.
 4. Configura un dominio o la URL del laboratorio y HTTPS mediante el proxy del alojamiento.
@@ -137,7 +137,7 @@ Para cambiar contraseñas usa **Usuarios → Restablecer contraseña** (la perso
 ```sh
 read -s NEW_PASSWORD
 export NEW_PASSWORD
-docker compose exec -e NEW_PASSWORD app php scripts/change_password.php admin@cantera.local
+docker compose exec -e NEW_PASSWORD app php scripts/change_password.php admin@futkids.local
 unset NEW_PASSWORD
 ```
 
@@ -183,7 +183,7 @@ node tests/http-smoke.mjs http://localhost:8080
 | --- | --- |
 | `docker compose run --rm --build test` | PHPUnit: suites `Unit`, `Integration` y `Migration`. Cada prueba usa su propia base SQLite y la fecha congelada en 2026-10-16 09:00 (America/Guatemala). |
 | `npm --prefix tests test` | Reglas del navegador con los mismos casos que PHP (node:test), interfaz con jsdom y API simulada, y que ningún tamaño de letra salga de la escala (stylelint). |
-| `npm --prefix tests run e2e` | Playwright en Chromium contra la aplicación real (servidor PHP aislado en Docker): flujos completos de clasificación, liga, validaciones y usuarios; accesibilidad con axe en modo claro y oscuro; diseño en teléfono. Primero: `npx --prefix tests playwright install chromium` y `docker build --target base -t cantera-base .`. |
+| `npm --prefix tests run e2e` | Playwright en Chromium contra la aplicación real (servidor PHP aislado en Docker): flujos completos de clasificación, liga, validaciones y usuarios; accesibilidad con axe en modo claro y oscuro; diseño en teléfono. Primero: `npx --prefix tests playwright install chromium` y `docker build --target base -t futkids-base .`. |
 | `node tests/http-smoke.mjs <url>` | Rutas HTTP, roles, CSRF, fotografías, liga y cuentas sobre una instalación de prueba (crea y limpia registros temporales). |
 
 La integración continua (`.github/workflows/ci.yml`) ejecuta todo lo anterior y, además, migra una base **MySQL 8.4** real, comprueba la actualización desde la versión anterior (`tests/mysql/upgrade-check.php`) y corre la prueba HTTP contra MySQL. El detalle de la última verificación está en [docs/VERIFICACION.md](docs/VERIFICACION.md).

@@ -73,8 +73,6 @@ abstract class IntegrationTestCase extends TestCase
         $this->fail('Se esperaba que la operación fuera rechazada.');
     }
 
-    // ---- Tournaments -------------------------------------------------------------------------------
-
     protected function createTournament(array $overrides = []): array {
         static $sequence = 0;
         return $this->tournaments->save($overrides + [
@@ -131,8 +129,6 @@ abstract class IntegrationTestCase extends TestCase
         return $this->matchModel($tournamentId, $matchId)->toArray();
     }
 
-    // ---- Match operation ---------------------------------------------------------------------------
-
     protected function schedule(int $tournamentId, int $matchId, string $at, string $venue = 'Cancha 1', int $refereeId = self::REFEREE_ID): void {
         $this->scheduler->schedule($this->tournament($tournamentId), $this->matchModel($tournamentId, $matchId), ['scheduled_at' => $at, 'venue' => $venue, 'referee_user_id' => $refereeId], self::ADMIN_ID);
     }
@@ -164,8 +160,6 @@ abstract class IntegrationTestCase extends TestCase
     protected static function ownGoal(array $player, int $minute, int $period = 0): array {
         return self::goal($player, $minute, $period) + ['own_goal' => 1];
     }
-
-    // ---- Data helpers ------------------------------------------------------------------------------
 
     /** @return list<array> players of the team ordered by id */
     protected function playersOf(int $teamId): array {

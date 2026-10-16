@@ -27,7 +27,7 @@ return static function (array $settings): DiInterface {
     $di->setShared('session', function () use ($settings) {
         if (PHP_SAPI !== 'cli') {
             ini_set('session.use_strict_mode', '1');
-            session_name('cantera_session');
+            session_name('futkids_session');
             session_set_cookie_params(['httponly' => true, 'secure' => ($settings['environment'] === 'production' || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')), 'samesite' => 'Lax', 'path' => '/']);
         }
         $session = new Phalcon\Session\Manager();

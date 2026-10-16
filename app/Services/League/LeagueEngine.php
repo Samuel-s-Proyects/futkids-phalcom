@@ -74,8 +74,6 @@ final class LeagueEngine implements TournamentFormat
         $tournament->saveOrFail('No se pudo reabrir el torneo.');
     }
 
-    // ---- Calendar -----------------------------------------------------------------------------------
-
     /**
      * Proposed calendar: one matchday every `interval_days` from `first_date`, with its pairings.
      * @return array{rounds: int, matchday_count: int, matchdays: list<array{number: int, leg: int, game_date: string, pairs: list<array{home: int, away: int}>, resting: ?int}>}
@@ -242,8 +240,6 @@ final class LeagueEngine implements TournamentFormat
         $this->audit->record($match, $actorId, 'moved_matchday', ['before' => $before, 'after' => ['matchday_id' => (int)$target->id]]);
     }
 
-    // ---- Table --------------------------------------------------------------------------------------
-
     /** Current table (confirmed results only) with the number of results still awaiting confirmation. */
     public function standings(Tournament $tournament): array {
         $id = (int)$tournament->id;
@@ -265,8 +261,6 @@ final class LeagueEngine implements TournamentFormat
             $names,
         );
     }
-
-    // ---- Rules --------------------------------------------------------------------------------------
 
     private function assertCanGenerate(Tournament $tournament): void {
         if (!$tournament->isLeague()) throw new HttpException('Este torneo es de clasificación: genere su cuadro.', 409);

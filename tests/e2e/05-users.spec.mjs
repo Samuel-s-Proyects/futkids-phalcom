@@ -4,7 +4,7 @@ import { dialogField, login } from './helpers.mjs';
 
 test.describe.configure({ mode: 'serial' });
 
-const email = `arbitro.${Date.now()}@cantera.local`;
+const email = `arbitro.${Date.now()}@futkids.local`;
 let temporaryPassword = '';
 
 test('el administrador crea un árbitro con contraseña temporal', async ({ page }) => {

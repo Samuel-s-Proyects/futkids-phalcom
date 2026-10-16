@@ -1,4 +1,3 @@
-// Reusable pieces of markup.
 import { esc, icon } from '../core/dom.js';
 
 export const badge = (text, tone = '') => `<span class="badge${tone ? ' badge--' + tone : ''}">${esc(text)}</span>`;

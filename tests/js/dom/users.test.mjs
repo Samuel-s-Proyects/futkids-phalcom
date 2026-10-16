@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { boot, until } from './harness.mjs';
 
 const accounts = [
-  { id: 1, name: 'Administrador', email: 'admin@cantera.local', role: 'admin', active: 1, must_change_password: 0, last_login_at: '2026-10-16 08:00:00', pending_matches: [] },
-  { id: 2, name: 'Árbitro', email: 'arbitro@cantera.local', role: 'referee', active: 1, must_change_password: 0, last_login_at: null, pending_matches: [{ id: 11 }] },
+  { id: 1, name: 'Administrador', email: 'admin@futkids.local', role: 'admin', active: 1, must_change_password: 0, last_login_at: '2026-10-16 08:00:00', pending_matches: [] },
+  { id: 2, name: 'Árbitro', email: 'arbitro@futkids.local', role: 'referee', active: 1, must_change_password: 0, last_login_at: null, pending_matches: [{ id: 11 }] },
 ];
 
 const app = await boot({
@@ -38,7 +38,7 @@ test('crear usuario sugiere una contraseña temporal válida', async () => {
   assert.ok(password.length >= 10 && /[a-z]/i.test(password) && /[0-9]/.test(password));
   assert.match(app.text('#user-form'), /deberá cambiarla al ingresar/);
   form.elements.name.value = 'Ana Méndez';
-  form.elements.email.value = 'ana@cantera.local';
+  form.elements.email.value = 'ana@futkids.local';
   form.requestSubmit();
   await until(() => app.calls.some(call => call.method === 'POST' && call.path === '/api/users'));
   const { body } = app.calls.find(call => call.method === 'POST' && call.path === '/api/users');

@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 export default function cleanup() {
   if (process.env.E2E_SERVER === 'native') return;
   try {
-    execSync('docker rm -f cantera-e2e', { stdio: 'ignore' });
+    execSync('docker rm -f futkids-e2e', { stdio: 'ignore' });
   } catch {
     // Not running: nothing to clean.
   }

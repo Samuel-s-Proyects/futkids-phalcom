@@ -19,8 +19,8 @@ return [
     'fixed_now' => $env('APP_FIXED_NOW', ''),
     'database' => [
         'driver' => $env('DB_DRIVER', 'mysql'), 'host' => $env('DB_HOST', 'db'),
-        'port' => (int)$env('DB_PORT', '3306'), 'dbname' => $env('DB_NAME', 'cantera'),
-        'username' => $env('DB_USER', 'cantera'), 'password' => $env('DB_PASSWORD', ''),
+        'port' => (int)$env('DB_PORT', '3306'), 'dbname' => $env('DB_NAME', 'futkids'),
+        'username' => $env('DB_USER', 'futkids'), 'password' => $env('DB_PASSWORD', ''),
         'charset' => 'utf8mb4',
     ],
     'age_min' => (int)$env('AGE_MIN', '5'), 'age_max' => (int)$env('AGE_MAX', '14'),

@@ -91,7 +91,7 @@ test('los errores del servidor aparecen junto a su campo', async () => {
 test('el modo oscuro se puede elegir y se recuerda', () => {
   app.click('[data-action="toggle-theme"]');
   assert.equal(app.document.documentElement.dataset.theme, 'dark');
-  assert.equal(app.window.localStorage.getItem('cantera-theme'), 'dark');
+  assert.equal(app.window.localStorage.getItem('futkids-theme'), 'dark');
   assert.equal(app.$('#theme-toggle').getAttribute('aria-label'), 'Cambiar a modo claro');
 });
 

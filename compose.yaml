@@ -2,10 +2,10 @@ services:
   db:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-cantera}
-      MYSQL_USER: ${DB_USER:-cantera}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-CanteraDB2026_local}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-CanteraRoot2026_local}
+      MYSQL_DATABASE: ${DB_NAME:-futkids}
+      MYSQL_USER: ${DB_USER:-futkids}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-FutKidsDB2026_local}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-FutKidsRoot2026_local}
     volumes:
       - database:/var/lib/mysql
     healthcheck:
@@ -21,13 +21,13 @@ services:
       APP_TIMEZONE: ${APP_TIMEZONE:-America/Guatemala}
       DB_HOST: db
       DB_PORT: 3306
-      DB_NAME: ${DB_NAME:-cantera}
-      DB_USER: ${DB_USER:-cantera}
-      DB_PASSWORD: ${DB_PASSWORD:-CanteraDB2026_local}
+      DB_NAME: ${DB_NAME:-futkids}
+      DB_USER: ${DB_USER:-futkids}
+      DB_PASSWORD: ${DB_PASSWORD:-FutKidsDB2026_local}
       AGE_MIN: ${AGE_MIN:-5}
       AGE_MAX: ${AGE_MAX:-14}
       AGE_REFERENCE_DATE: ${AGE_REFERENCE_DATE:-2026-10-03}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Cantera2026!}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-FutKids2026!}
       SEED_REFEREE_PASSWORD: ${SEED_REFEREE_PASSWORD:-Arbitro2026!}
     volumes:
       - photographs:/var/www/html/public/uploads

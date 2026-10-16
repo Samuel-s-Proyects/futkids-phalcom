@@ -29,8 +29,6 @@ function matchRow(m) {
     ${badge(state.label, state.tone)}${button('Abrir', { action: 'open-match', data: { id: m.id }, small: true })}</li>`;
 }
 
-// ---- Calendar tab -------------------------------------------------------------------------------
-
 export function calendarTab(t) {
   if (!t.fixture_generated_at) {
     const count = t.matchday_count;
@@ -58,8 +56,6 @@ export function calendarTab(t) {
     ${days}`;
 }
 
-// ---- Table tab ----------------------------------------------------------------------------------
-
 export function standingsTab(t) {
   if (!t.standings?.length) return `<div class="card">${emptyState('La tabla aparecerá con los equipos inscritos', '', 'trophy')}</div>`;
   const provisional = t.matches.filter(m => m.workflow_status === 'awaiting_confirmation').length;
@@ -77,8 +73,6 @@ export function standingsTab(t) {
     ${table([{ label: 'Pos.' }, { label: 'Equipo' }, { label: 'PJ', numeric: true }, { label: 'G', numeric: true }, { label: 'E', numeric: true }, { label: 'P', numeric: true }, { label: 'GF', numeric: true }, { label: 'GC', numeric: true }, { label: 'DG', numeric: true }, { label: 'Pts', numeric: true }, { label: 'Últimos' }], rows, { caption: 'Tabla de posiciones', rowClass: index => (index === 0 ? 'is-highlighted' : '') })}
     <p class="muted report-header">Desempate: 1) puntos, 2) diferencia de goles, 3) goles a favor, 4) resultados entre los equipos empatados, 5) juego limpio (menos tarjetas rojas y luego amarillas). PJ jugados · G ganados · E empatados · P perdidos · GF/GC goles a favor y en contra · DG diferencia.</p></div>`;
 }
-
-// ---- Calendar generation ------------------------------------------------------------------------
 
 function openFixture() {
   const t = store.tournament;
@@ -134,8 +128,6 @@ onAction('generate-fixture', async trigger => {
     form.querySelector('.form-error').textContent = [error.message, ...Object.values(error.fields ?? {})].filter((v, i, all) => all.indexOf(v) === i).join(' ');
   }
 });
-
-// ---- Matchdays ----------------------------------------------------------------------------------
 
 function matchdayForm(matchday = null) {
   const t = store.tournament;

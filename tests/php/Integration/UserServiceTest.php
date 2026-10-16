@@ -16,13 +16,13 @@ final class UserServiceTest extends IntegrationTestCase
         $this->users = $this->di->getShared('users');
     }
 
-    private function newReferee(string $email = 'nuevo.arbitro@cantera.local'): array {
+    private function newReferee(string $email = 'nuevo.arbitro@futkids.local'): array {
         return $this->users->create(['name' => 'Ana Méndez', 'email' => $email, 'role' => 'referee', 'password' => 'Temporal2026']);
     }
 
     public function testAdministratorCreatesAccountsThatMustChangeTheirPassword(): void {
-        $user = $this->newReferee('  Ana.Mendez@Cantera.Local ');
-        $this->assertSame(['ana.mendez@cantera.local', 'referee', 1, 1], [$user['email'], $user['role'], $user['active'], $user['must_change_password']]);
+        $user = $this->newReferee('  Ana.Mendez@FutKids.Local ');
+        $this->assertSame(['ana.mendez@futkids.local', 'referee', 1, 1], [$user['email'], $user['role'], $user['active'], $user['must_change_password']]);
         $this->assertArrayNotHasKey('password_hash', $user);
         $this->assertTrue($this->di->getShared('security')->checkHash('Temporal2026', (string)User::findFirst($user['id'])->password_hash));
     }
@@ -30,8 +30,8 @@ final class UserServiceTest extends IntegrationTestCase
     public function testAccountDataIsValidated(): void {
         $error = $this->assertRejected(fn() => $this->users->create(['name' => 'Ana <b>', 'email' => 'no-es-correo', 'role' => 'superuser', 'password' => 'corta']), 422);
         $this->assertEqualsCanonicalizing(['name', 'email', 'role', 'password'], array_keys($error->fields));
-        $this->assertRejected(fn() => $this->users->create(['name' => 'Ana', 'email' => 'ADMIN@cantera.local', 'role' => 'admin', 'password' => 'Segura2026xx']), 422, 'email');
-        $this->assertRejected(fn() => $this->users->create(['name' => 'Ana', 'email' => 'ana@cantera.local', 'role' => 'admin', 'password' => 'soloLetrasLargas']), 422, 'password');
+        $this->assertRejected(fn() => $this->users->create(['name' => 'Ana', 'email' => 'ADMIN@futkids.local', 'role' => 'admin', 'password' => 'Segura2026xx']), 422, 'email');
+        $this->assertRejected(fn() => $this->users->create(['name' => 'Ana', 'email' => 'ana@futkids.local', 'role' => 'admin', 'password' => 'soloLetrasLargas']), 422, 'password');
         $this->assertRejected(fn() => $this->users->create(['name' => 'Ana', 'email' => 'ana12345678@x.co', 'role' => 'admin', 'password' => 'ana12345678@x.co']), 422, 'password');
     }
 
@@ -42,7 +42,7 @@ final class UserServiceTest extends IntegrationTestCase
     }
 
     public function testTheLastActiveAdministratorIsKept(): void {
-        $second = $this->users->create(['name' => 'Segundo Admin', 'email' => 'admin2@cantera.local', 'role' => 'admin', 'password' => 'Segura2026xx']);
+        $second = $this->users->create(['name' => 'Segundo Admin', 'email' => 'admin2@futkids.local', 'role' => 'admin', 'password' => 'Segura2026xx']);
         $this->users->setActive(self::ADMIN_ID, 0, (int)$second['id']);
         $this->assertRejected(fn() => $this->users->setActive((int)$second['id'], 0, 999), 409, 'active');
         $this->users->setActive(self::ADMIN_ID, 1, (int)$second['id']);

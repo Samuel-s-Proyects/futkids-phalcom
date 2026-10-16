@@ -1,5 +1,5 @@
 {
-  "name": "umg/cantera",
+  "name": "umg/futkids",
   "description": "Gestión de un torneo infantil de fútbol con Phalcon 5",
   "type": "project",
   "require": {

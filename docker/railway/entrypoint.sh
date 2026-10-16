@@ -11,6 +11,6 @@ until php /var/www/html/scripts/migrate.php; do
     sleep 3
 done
 php /var/www/html/scripts/seed.php
-sed "s/__PORT__/${PORT:-8080}/" /etc/nginx/cantera.conf.template > /etc/nginx/conf.d/default.conf
+sed "s/__PORT__/${PORT:-8080}/" /etc/nginx/futkids.conf.template > /etc/nginx/conf.d/default.conf
 php-fpm -D
 exec nginx -g 'daemon off;'

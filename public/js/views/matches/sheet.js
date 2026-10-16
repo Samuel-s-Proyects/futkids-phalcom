@@ -84,7 +84,6 @@ export function openMatchSheet(match, mode = 'result') {
   recalculate($('#sheet-form'));
 }
 
-/** Goals as entered in the sheet. */
 function sheetEvents(form, match) {
   return $$('.goal-row', form).map(row => {
     const n = row.dataset.row;

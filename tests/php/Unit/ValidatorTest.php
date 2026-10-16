@@ -56,10 +56,10 @@ final class ValidatorTest extends TestCase
     }
 
     public function testChoiceFlagAndEmail(): void {
-        $v = new Validator(['type' => 'league', 'flag' => '1', 'email' => ' Ana@Cantera.Local ', 'bad_email' => 'ana@']);
+        $v = new Validator(['type' => 'league', 'flag' => '1', 'email' => ' Ana@FutKids.Local ', 'bad_email' => 'ana@']);
         $this->assertSame('league', $v->choice('type', ['knockout', 'league'], 'Tipo inválido.'));
         $this->assertSame(1, $v->flag('flag'));
-        $this->assertSame('ana@cantera.local', $v->email('email'));
+        $this->assertSame('ana@futkids.local', $v->email('email'));
         $v->email('bad_email');
         $this->assertSame(['bad_email'], array_keys($v->errors()));
     }

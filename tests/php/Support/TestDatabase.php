@@ -10,7 +10,7 @@ use App\Database\Seeder;
  */
 final class TestDatabase
 {
-    public const ADMIN_PASSWORD = 'Cantera2026!';
+    public const ADMIN_PASSWORD = 'FutKids2026!';
     public const REFEREE_PASSWORD = 'Arbitro2026!';
 
     private static ?string $template = null;
@@ -46,7 +46,7 @@ final class TestDatabase
     }
 
     private static function newFile(): string {
-        $file = sys_get_temp_dir() . '/cantera-test-' . bin2hex(random_bytes(8)) . '.sqlite';
+        $file = sys_get_temp_dir() . '/futkids-test-' . bin2hex(random_bytes(8)) . '.sqlite';
         self::$files[] = $file;
         return $file;
     }

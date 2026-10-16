@@ -11,7 +11,7 @@ test('sin sesión se muestra el acceso con cuentas de demostración', () => {
 });
 
 test('una contraseña incorrecta muestra el error del servidor', async () => {
-  app.$('#login-form [name=email]').value = 'admin@cantera.local';
+  app.$('#login-form [name=email]').value = 'admin@futkids.local';
   app.$('#login-form [name=password]').value = 'mala';
   app.$('#login-form').requestSubmit();
   await until(() => app.text('#login-error'));

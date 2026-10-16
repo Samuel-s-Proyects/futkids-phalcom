@@ -51,7 +51,7 @@ try {
   let r = await admin('/api/health');
   check(r.status === 200 && r.data.framework.startsWith('Phalcon 5.'), 'Servidor Phalcon y conexión de datos');
   r = await admin('/');
-  check(r.status === 200 && r.data.includes('Cantera · Torneo infantil') && r.headers.get('content-security-policy'), 'Página Volt y cabeceras de seguridad');
+  check(r.status === 200 && r.data.includes('FutKids · La liga de las futuras estrellas') && r.headers.get('content-security-policy'), 'Página Volt y cabeceras de seguridad');
   r = await admin('/js/main.js');
   check(r.status === 200 && /javascript/.test(r.headers.get('content-type')), 'Módulos JavaScript servidos con tipo correcto');
   r = await admin('/api/session');
@@ -63,9 +63,9 @@ try {
   // Roles
   const referee = client();
   await referee('/api/session');
-  r = await referee('/api/login', { method: 'POST', body: { email: 'admin@cantera.local', password: 'incorrecta' } });
+  r = await referee('/api/login', { method: 'POST', body: { email: 'admin@futkids.local', password: 'incorrecta' } });
   check(r.status === 401, 'Credenciales incorrectas');
-  r = await referee('/api/login', { method: 'POST', body: { email: 'arbitro@cantera.local', password: 'Arbitro2026!' } });
+  r = await referee('/api/login', { method: 'POST', body: { email: 'arbitro@futkids.local', password: 'Arbitro2026!' } });
   check(r.status === 200 && r.data.user.role === 'referee', 'Inicio de sesión del árbitro');
   r = await referee('/api/state');
   check(r.status === 200 && r.data.players.length >= 20, 'Consulta de datos por árbitro');
@@ -77,7 +77,7 @@ try {
   check(r.status === 200, 'Cierre de sesión');
 
   await admin('/api/session');
-  r = await admin('/api/login', { method: 'POST', body: { email: 'admin@cantera.local', password: 'Cantera2026!' } });
+  r = await admin('/api/login', { method: 'POST', body: { email: 'admin@futkids.local', password: 'FutKids2026!' } });
   check(r.status === 200 && r.data.user.role === 'admin', 'Inicio de sesión del administrador');
   r = await admin('/api/teams', { method: 'POST', token: false, body: { name: 'Sin CSRF', active: 1 } });
   check(r.status === 419, 'Los cambios requieren token CSRF');
@@ -145,7 +145,7 @@ try {
   check(r.status === 200 && r.data.rows.length === 3 && r.data.rows.every(row => row.points === 0), 'Tabla de posiciones inicial');
 
   // Accounts
-  r = await admin('/api/users', { method: 'POST', body: { name: 'Árbitro Temporal', email: `temporal.${Date.now()}@cantera.local`, role: 'referee', password: 'Temporal2026' } });
+  r = await admin('/api/users', { method: 'POST', body: { name: 'Árbitro Temporal', email: `temporal.${Date.now()}@futkids.local`, role: 'referee', password: 'Temporal2026' } });
   check(r.status === 201 && r.data.record.must_change_password === 1, 'Alta de árbitro con contraseña temporal');
   temporaryUserId = r.data.record.id;
   const newcomer = client();

@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Cantera: gestión de torneos de fútbol infantil, equipos, jugadores y reportes.">
-  <meta name="theme-color" content="#122d29">
-  <title>Cantera · Torneo infantil</title>
+  <meta name="description" content="FutKids, la liga de las futuras estrellas: gestión de torneos de fútbol infantil, equipos, jugadores y reportes.">
+  <meta name="theme-color" content="#ffd60a">
+  <title>FutKids · La liga de las futuras estrellas</title>
   <link rel="icon" href="/images/brand.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
@@ -22,7 +22,7 @@
     <aside class="sidebar" id="sidebar" aria-label="Menú principal">
       <a class="brand" href="#panel">
         <img src="/images/brand.svg" alt="">
-        <span>cantera<span class="brand__tagline">Fútbol infantil</span></span>
+        <span class="brand__name">Fut<b>Kids</b><span class="brand__tagline">La liga de las futuras estrellas</span></span>
       </a>
       <nav class="nav" id="navigation" aria-label="Secciones"></nav>
       <div class="sidebar__footer">
@@ -45,18 +45,18 @@
         </div>
       </header>
       <main id="main-content" tabindex="-1"><div class="loading">Cargando…</div></main>
-      <footer class="main-footer"><span>Cantera · Gestión del torneo infantil</span><span>Proyecto académico · UMG</span></footer>
+      <footer class="main-footer"><span>FutKids · La liga de las futuras estrellas</span><span>Proyecto académico · UMG</span></footer>
     </div>
   </div>
 
   <section id="login" class="login-screen" hidden>
     <div class="login-story">
-      <a class="brand" href="#"><img src="/images/brand.svg" alt=""><span>cantera</span></a>
+      <a class="brand" href="#"><img src="/images/brand.svg" alt=""><span class="brand__name">Fut<b>Kids</b></span></a>
       <div>
-        <h1>El talento crece.<br>El torneo se organiza.</h1>
-        <p>Torneos, equipos, partidos y goles de la liga infantil, en un solo lugar.</p>
+        <h1>La liga de las<br>futuras estrellas.</h1>
+        <p>Torneos, equipos, partidos y goles del fútbol infantil, en un solo lugar.</p>
       </div>
-      <small>Torneo infantil · Guatemala</small>
+      <small>Fútbol infantil · Guatemala</small>
     </div>
     <div class="login-panel">
       <div class="login-panel__inner">
@@ -86,7 +86,7 @@
     </div>
   </section>
 
-  <div id="startup" class="startup" role="status"><img src="/images/brand.svg" alt=""><span>Cargando Cantera…</span></div>
+  <div id="startup" class="startup" role="status"><img src="/images/brand.svg" alt=""><span>Cargando FutKids…</span></div>
 
   <dialog id="form-dialog" class="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
   <dialog id="wide-dialog" class="dialog dialog--wide" aria-labelledby="wide-dialog-title"><div id="wide-dialog-content"></div></dialog>

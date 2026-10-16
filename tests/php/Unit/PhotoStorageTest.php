@@ -10,7 +10,7 @@ final class PhotoStorageTest extends TestCase
     private string $directory;
 
     protected function setUp(): void {
-        $this->directory = sys_get_temp_dir() . '/cantera-photo-permissions-' . bin2hex(random_bytes(6));
+        $this->directory = sys_get_temp_dir() . '/futkids-photo-permissions-' . bin2hex(random_bytes(6));
         mkdir($this->directory, 0555);
     }
 

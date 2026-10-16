@@ -17,7 +17,7 @@ final class MigratorTest extends TestCase
     protected function setUp(): void {
         $this->db = new Sqlite(['dbname' => TestDatabase::emptyFile()]);
         $this->db->execute('PRAGMA foreign_keys = ON');
-        $this->directory = sys_get_temp_dir() . '/cantera-migrations-' . bin2hex(random_bytes(6));
+        $this->directory = sys_get_temp_dir() . '/futkids-migrations-' . bin2hex(random_bytes(6));
         mkdir($this->directory);
     }
 

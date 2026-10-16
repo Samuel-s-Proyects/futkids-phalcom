@@ -41,8 +41,6 @@ const SECTIONS = [
 const visibleSections = () => SECTIONS.filter(section => !section.adminOnly || isAdmin());
 const sectionFor = key => visibleSections().find(section => section.key === key);
 
-// ---- Shell --------------------------------------------------------------------------------------
-
 function renderNavigation(active) {
   let group = '';
   $('#navigation').innerHTML = visibleSections().map(section => {
@@ -80,9 +78,7 @@ function applyTheme(theme) {
   toggle.title = toggle.getAttribute('aria-label');
 }
 
-const storedTheme = () => { try { return localStorage.getItem('cantera-theme'); } catch { return null; } };
-
-// ---- Routing ------------------------------------------------------------------------------------
+const storedTheme = () => { try { return localStorage.getItem('futkids-theme'); } catch { return null; } };
 
 let renderGeneration = 0;
 
@@ -107,12 +103,10 @@ async function show(route, { refresh = false } = {}) {
     main.innerHTML = emptyState('No se pudo mostrar esta sección', error.message, 'alert');
   }
   renderBreadcrumb(section, route.params);
-  document.title = `${section.label} · Cantera`;
+  document.title = `${section.label} · FutKids`;
   // A temporary password must be replaced before anything else; navigation closes dialogs, so reopen it.
   if (store.user.must_change_password && !$('#own-password-form')) openOwnPassword(true);
 }
-
-// ---- Session ------------------------------------------------------------------------------------
 
 function showLogin() {
   $('#startup').hidden = true;
@@ -173,11 +167,9 @@ onAction('logout', async () => {
 
 onAction('prefill', trigger => {
   const admin = trigger.dataset.role === 'admin';
-  $('#login-form [name=email]').value = admin ? 'admin@cantera.local' : 'arbitro@cantera.local';
-  $('#login-form [name=password]').value = admin ? 'Cantera2026!' : 'Arbitro2026!';
+  $('#login-form [name=email]').value = admin ? 'admin@futkids.local' : 'arbitro@futkids.local';
+  $('#login-form [name=password]').value = admin ? 'FutKids2026!' : 'Arbitro2026!';
 });
-
-// ---- Shell actions ------------------------------------------------------------------------------
 
 onAction('close-dialog', () => closeDialogs());
 onAction('reload', () => location.reload());
@@ -189,7 +181,7 @@ onAction('toggle-theme', () => {
     ? document.documentElement.dataset.theme === 'dark'
     : matchMedia('(prefers-color-scheme: dark)').matches;
   const next = dark ? 'light' : 'dark';
-  try { localStorage.setItem('cantera-theme', next); } catch { /* preference not stored */ }
+  try { localStorage.setItem('futkids-theme', next); } catch { /* preference not stored */ }
   applyTheme(next);
 });
 
@@ -197,8 +189,6 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape' && $(
 document.addEventListener('change', event => {
   if (event.target.id === 'show-password') $('#login-form [name=password]').type = event.target.checked ? 'text' : 'password';
 });
-
-// ---- Start --------------------------------------------------------------------------------------
 
 export async function start() {
   listen();
@@ -214,8 +204,8 @@ export async function start() {
     if (store.user) await showApp();
     else showLogin();
   } catch (error) {
-    $('#startup').innerHTML = emptyState('No se pudo iniciar Cantera', error.message, 'alert', '<button class="button" type="button" data-action="reload">Reintentar</button>');
+    $('#startup').innerHTML = emptyState('No se pudo iniciar FutKids', error.message, 'alert', '<button class="button" type="button" data-action="reload">Reintentar</button>');
   }
 }
 
-if (!window.__CANTERA_TEST__) start();
+if (!window.__FUTKIDS_TEST__) start();

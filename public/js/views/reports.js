@@ -86,7 +86,7 @@ async function generate() {
     const { rows } = await api(`/reports/${KINDS[state.kind].api}?${query}`);
     if (generation !== state.generation) return;
     state.rows = rows;
-    region.innerHTML = `<div class="print-only"><h1>Cantera · ${esc(KINDS[state.kind].label)}</h1><p>${esc(filterSummary())} · Generado el ${esc(date(today()))}</p></div>
+    region.innerHTML = `<div class="print-only"><h1>FutKids · ${esc(KINDS[state.kind].label)}</h1><p>${esc(filterSummary())} · Generado el ${esc(date(today()))}</p></div>
       <div class="report-header"><div><h2>${esc(KINDS[state.kind].label)}</h2><p class="muted">${esc(filterSummary())} · ${plural(rows.length, 'registro')}</p></div>
       <div class="cluster">${button('Descargar CSV', { action: 'report-csv', iconName: 'download' })}${button('Imprimir o PDF', { action: 'print', iconName: 'print' })}</div></div>
       <div class="card--flush">${resultTable(state.kind, rows)}</div>`;
@@ -149,7 +149,7 @@ onAction('report-csv', () => {
   const cell = value => `"${String(value ?? '').replace(/^([=+\-@\t\r])/, "'$1").replace(/"/g, '""')}"`;
   const csv = '﻿' + [columns, ...values].map(row => row.map(cell).join(',')).join('\r\n');
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const link = Object.assign(document.createElement('a'), { href: url, download: `cantera-${kind}-${today()}.csv` });
+  const link = Object.assign(document.createElement('a'), { href: url, download: `futkids-${kind}-${today()}.csv` });
   document.body.append(link);
   link.click();
   link.remove();

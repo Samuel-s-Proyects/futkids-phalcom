@@ -7,7 +7,7 @@ if (!$seeder->isEmpty()) {
     exit(0);
 }
 $seeder->run([
-    'admin' => getenv('SEED_ADMIN_PASSWORD') ?: 'Cantera2026!',
+    'admin' => getenv('SEED_ADMIN_PASSWORD') ?: 'FutKids2026!',
     'referee' => getenv('SEED_REFEREE_PASSWORD') ?: 'Arbitro2026!',
 ]);
 echo "Datos de demostración y cuentas creados.\n";

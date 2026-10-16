@@ -2,7 +2,7 @@
 // Upgrade check on MySQL (SQLite is covered by the PHPUnit Migration suite):
 // a database at migration 011 with global matchdays from the previous version is migrated to the latest
 // version and must keep its data. Run against an EMPTY database:
-//   DB_DRIVER=mysql DB_NAME=cantera_upgrade … php tests/mysql/upgrade-check.php
+//   DB_DRIVER=mysql DB_NAME=futkids_upgrade … php tests/mysql/upgrade-check.php
 declare(strict_types=1);
 
 define('BASE_PATH', dirname(__DIR__, 2));

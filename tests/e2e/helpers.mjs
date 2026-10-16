@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
 
 export const ACCOUNTS = {
-  admin: { email: 'admin@cantera.local', password: 'Cantera2026!' },
-  referee: { email: 'arbitro@cantera.local', password: 'Arbitro2026!' },
+  admin: { email: 'admin@futkids.local', password: 'FutKids2026!' },
+  referee: { email: 'arbitro@futkids.local', password: 'Arbitro2026!' },
 };
 
 /** Signs in through the login screen and waits for the dashboard. */

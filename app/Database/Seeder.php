@@ -25,8 +25,8 @@ final class Seeder
         try {
             foreach (self::TABLES as $table) foreach ($seed[$table] ?? [] as $row) $this->db->insertAsDict($table, $row);
             $accounts = [
-                ['Administrador', 'admin@cantera.local', 'admin', $passwords['admin']],
-                ['Árbitro', 'arbitro@cantera.local', 'referee', $passwords['referee']],
+                ['Administrador', 'admin@futkids.local', 'admin', $passwords['admin']],
+                ['Árbitro', 'arbitro@futkids.local', 'referee', $passwords['referee']],
             ];
             foreach ($accounts as [$name, $email, $role, $password]) {
                 $this->db->insertAsDict('users', ['name' => $name, 'email' => $email, 'role' => $role, 'password_hash' => $this->security->hash($password)]);

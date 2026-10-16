@@ -64,7 +64,7 @@ function userForm(user = {}) {
       ${requiredLegend()}
       <div class="form-grid">
         ${field({ name: 'name', label: 'Nombre completo', value: user.name, required: true, rule: 'person_name', maxlength: 100, full: true, hint: 'Solo letras; puede usar espacio, guion o apóstrofo.' })}
-        ${field({ name: 'email', label: 'Correo electrónico', type: 'email', value: user.email, required: true, maxlength: 200, full: true, autocomplete: 'off', hint: 'Con este correo ingresará a Cantera. No puede repetirse.' })}
+        ${field({ name: 'email', label: 'Correo electrónico', type: 'email', value: user.email, required: true, maxlength: 200, full: true, autocomplete: 'off', hint: 'Con este correo ingresará a FutKids. No puede repetirse.' })}
         ${field({ name: 'role', label: 'Rol', type: 'select', value: user.role ?? 'referee', required: true, disabled: self, full: true, options: [{ value: 'referee', label: 'Árbitro' }, { value: 'admin', label: 'Administrador' }], hint: self ? 'No puede cambiar su propio rol.' : 'Un árbitro con partidos pendientes no puede cambiar de rol hasta reasignarlos.' })}
         ${editing ? '' : `${field({ name: 'password', label: 'Contraseña temporal', value: suggestPassword(), required: true, maxlength: 200, full: true, autocomplete: 'new-password', hint: `${passwordHint()} Compártala con la persona: deberá cambiarla al ingresar.` })}`}
       </div>
@@ -134,8 +134,6 @@ onSubmit('reset-password-form', async form => {
   rerender();
   toast('Contraseña restablecida.');
 });
-
-// ---- Own password -------------------------------------------------------------------------------
 
 /** @param {boolean} forced the account has a temporary password: the dialog cannot be dismissed */
 export function openOwnPassword(forced = false) {

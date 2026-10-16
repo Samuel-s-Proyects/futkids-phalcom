@@ -32,7 +32,7 @@ export async function until(check, timeout = 2000) {
 export async function boot({ user = null, routes = {}, hash = '' } = {}) {
   const html = readFileSync(resolve(root, 'app/views/index/index.volt'), 'utf8')
     .replace(/<script type="module"[^>]*><\/script>/, '');
-  const dom = new JSDOM(html, { url: `https://cantera.test/${hash}`, pretendToBeVisual: true });
+  const dom = new JSDOM(html, { url: `https://futkids.test/${hash}`, pretendToBeVisual: true });
   const { window } = dom;
 
   window.HTMLDialogElement.prototype.showModal = function showModal() { this.open = true; };
@@ -45,10 +45,10 @@ export async function boot({ user = null, routes = {}, hash = '' } = {}) {
   window.print = () => {};
   window.URL.createObjectURL = () => 'blob:test';
   window.URL.revokeObjectURL = () => {};
-  window.__CANTERA_TEST__ = true;
+  window.__FUTKIDS_TEST__ = true;
 
   const calls = [];
-  const state = { user, data: structuredClone({ ...seed, tournaments: [], tournament_teams: [], tournament_matches: [], tournament_match_goal_events: [], tournament_match_goals: [], referees: [{ id: 2, name: 'Árbitro', email: 'arbitro@cantera.local' }] }) };
+  const state = { user, data: structuredClone({ ...seed, tournaments: [], tournament_teams: [], tournament_matches: [], tournament_match_goal_events: [], tournament_match_goals: [], referees: [{ id: 2, name: 'Árbitro', email: 'arbitro@futkids.local' }] }) };
   const settings = {
     age_min: 5, age_max: 14, age_reference_date: '2026-10-03', demo_accounts: true,
     server_today: '2026-10-16', server_now: '2026-10-16T09:00', validation: rules,
@@ -57,7 +57,7 @@ export async function boot({ user = null, routes = {}, hash = '' } = {}) {
   const handlers = {
     'GET /api/session': () => ({ user: state.user, csrf: 'token', settings }),
     'POST /api/login': body => {
-      if (body.password !== 'Cantera2026!') return [401, { error: 'Correo o contraseña incorrectos.' }];
+      if (body.password !== 'FutKids2026!') return [401, { error: 'Correo o contraseña incorrectos.' }];
       state.user = { id: 1, name: 'Administrador', email: body.email, role: 'admin' };
       return { user: state.user, csrf: 'token2' };
     },
@@ -67,7 +67,7 @@ export async function boot({ user = null, routes = {}, hash = '' } = {}) {
   };
 
   window.fetch = async (url, init = {}) => {
-    const { pathname, search } = new URL(url, 'https://cantera.test');
+    const { pathname, search } = new URL(url, 'https://futkids.test');
     const method = init.method ?? 'GET';
     const body = typeof init.body === 'string' ? JSON.parse(init.body) : init.body;
     calls.push({ method, path: pathname, search, body, headers: init.headers ?? {} });

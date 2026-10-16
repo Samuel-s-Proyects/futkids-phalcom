@@ -3,7 +3,7 @@ import { ACCOUNTS, login } from './helpers.mjs';
 
 test('una contraseña incorrecta muestra un error sin revelar si la cuenta existe', async ({ page }) => {
   await page.goto('/');
-  await page.getByLabel('Correo electrónico').fill('nadie@cantera.local');
+  await page.getByLabel('Correo electrónico').fill('nadie@futkids.local');
   await page.getByLabel('Contraseña', { exact: true }).fill('incorrecta');
   await page.getByRole('button', { name: 'Ingresar' }).click();
   await expect(page.getByRole('alert')).toHaveText('Correo o contraseña incorrectos.');
