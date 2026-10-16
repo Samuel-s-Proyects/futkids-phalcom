@@ -29,10 +29,10 @@ function typeStep(current) {
 
 function dataStep(t) {
   return `<fieldset class="form-grid" data-step="1" hidden><legend class="visually-hidden">${STEPS[1]}</legend>
-    ${field({ name: 'name', label: 'Nombre del torneo', value: t.name, required: true, rule: 'title', maxlength: 150, full: true, placeholder: 'Ej.: Copa Apertura Sub-12 2026', hint: 'Use letras y números; puede separar con espacio, guion o punto. No se permiten símbolos como # @ / < >.' })}
-    ${field({ name: 'start_date', label: 'Fecha de inicio', type: 'date', value: t.start_date, required: true, min: t.id ? '' : today(), change: 'tournament-start', hint: 'No puede ser anterior a hoy.' })}
-    ${field({ name: 'end_date', label: 'Fecha de finalización', type: 'date', value: t.end_date, required: true, min: t.start_date || today(), hint: 'Igual o posterior a la fecha de inicio. Los partidos solo se pueden programar dentro de este período.' })}
-    ${field({ name: 'match_duration_minutes', label: 'Duración de cada partido (minutos)', type: 'number', value: t.match_duration_minutes ?? 60, required: true, min: 10, max: 180, hint: 'Entre 10 y 180. Se usa para que un equipo, una cancha o un árbitro no tengan dos partidos a la vez.' })}
+    ${field({ name: 'name', label: 'Nombre del torneo', value: t.name, required: true, rule: 'title', maxlength: 150, full: true, placeholder: 'Ej.: Copa Apertura Sub-12 2026', hint: 'Nombre con el que se identifica el torneo.' })}
+    ${field({ name: 'start_date', label: 'Fecha de inicio', type: 'date', value: t.start_date, required: true, min: t.id ? '' : today(), change: 'tournament-start', hint: 'Día en que comienza el torneo.' })}
+    ${field({ name: 'end_date', label: 'Fecha de finalización', type: 'date', value: t.end_date, required: true, min: t.start_date || today(), hint: 'Día en que termina el torneo.' })}
+    ${field({ name: 'match_duration_minutes', label: 'Duración de cada partido (minutos)', type: 'number', value: t.match_duration_minutes ?? 60, required: true, min: 10, max: 180, hint: 'Tiempo de juego de cada partido.' })}
   </fieldset>`;
 }
 
@@ -42,17 +42,17 @@ function rulesStep(t) {
   return `<fieldset data-step="2" hidden><legend class="visually-hidden">${STEPS[2]}</legend>
     <div class="form-grid" data-rules="league" ${league ? '' : 'hidden'}>
     <p class="field--full muted">Cada partido da puntos según el resultado; el empate es un resultado válido. Gana quien termina primero en la tabla.</p>
-    ${field({ name: 'league_rounds', label: 'Vueltas', type: 'select', value: t.league_rounds ?? 1, required: true, full: true, disabled: !league, options: [{ value: 1, label: 'Solo ida: cada pareja de equipos juega una vez' }, { value: 2, label: 'Ida y vuelta: cada pareja juega dos veces, una de local y otra de visitante' }], hint: 'El número de jornadas se calcula solo: con N equipos son N − 1 jornadas por vuelta (N si N es impar, porque un equipo descansa cada jornada).' })}
-    ${field({ name: 'points_win', label: 'Puntos por ganar', type: 'number', value: t.points_win ?? 3, required: true, min: 0, max: 10, disabled: !league, hint: 'Lo habitual es 3.' })}
-    ${field({ name: 'points_draw', label: 'Puntos por empatar', type: 'number', value: t.points_draw ?? 1, required: true, min: 0, max: 10, disabled: !league, hint: 'Menos que ganar; lo habitual es 1.' })}
-    ${field({ name: 'points_loss', label: 'Puntos por perder', type: 'number', value: t.points_loss ?? 0, required: true, min: 0, max: 10, disabled: !league, hint: 'No más que empatar; lo habitual es 0.' })}
+    ${field({ name: 'league_rounds', label: 'Vueltas', type: 'select', value: t.league_rounds ?? 1, required: true, full: true, disabled: !league, options: [{ value: 1, label: 'Solo ida: cada pareja de equipos juega una vez' }, { value: 2, label: 'Ida y vuelta: cada pareja juega dos veces, una de local y otra de visitante' }], hint: 'Veces que cada equipo se enfrenta a todos los demás.' })}
+    ${field({ name: 'points_win', label: 'Puntos por ganar', type: 'number', value: t.points_win ?? 3, required: true, min: 0, max: 10, disabled: !league, hint: 'Puntos por partido ganado.' })}
+    ${field({ name: 'points_draw', label: 'Puntos por empatar', type: 'number', value: t.points_draw ?? 1, required: true, min: 0, max: 10, disabled: !league, hint: 'Puntos por partido empatado.' })}
+    ${field({ name: 'points_loss', label: 'Puntos por perder', type: 'number', value: t.points_loss ?? 0, required: true, min: 0, max: 10, disabled: !league, hint: 'Puntos por partido perdido.' })}
     </div>
     <div class="form-grid" data-rules="knockout" ${league ? 'hidden' : ''}>
     <p class="field--full muted">Se aplican solo cuando un partido termina empatado, porque en eliminación directa siempre debe haber un ganador.</p>
-    ${field({ name: 'extra_time_periods', label: 'Períodos de tiempo extra', type: 'number', value: periods, required: true, min: 0, max: 4, change: 'extra-periods', hint: 'De 0 a 4. Con 0, un empate pasa directo a penales.' })}
-    ${field({ name: 'extra_time_period_minutes', label: 'Minutos de cada período extra', type: 'number', value: t.extra_time_period_minutes ?? 10, required: +periods > 0, min: 1, max: 30, disabled: +periods === 0, hint: 'De 1 a 30 minutos.' })}
-    ${field({ name: 'penalty_attempts_per_team', label: 'Penales iniciales por equipo', type: 'number', value: t.penalty_attempts_per_team ?? 5, required: true, min: 1, max: 10, hint: 'Lo habitual son 5 tiros por equipo (de 1 a 10).' })}
-    ${field({ name: 'penalty_sudden_death', label: 'Si la tanda sigue empatada', type: 'select', value: t.penalty_sudden_death ?? 1, required: true, options: [{ value: 1, label: 'Muerte súbita: un tiro por equipo hasta que haya ganador' }, { value: 0, label: 'Sin muerte súbita' }], hint: 'Con muerte súbita la tanda siempre termina con un ganador.' })}
+    ${field({ name: 'extra_time_periods', label: 'Períodos de tiempo extra', type: 'number', value: periods, required: true, min: 0, max: 4, change: 'extra-periods', hint: 'Periodos que se juegan si el partido termina empatado.' })}
+    ${field({ name: 'extra_time_period_minutes', label: 'Minutos de cada período extra', type: 'number', value: t.extra_time_period_minutes ?? 10, required: +periods > 0, min: 1, max: 30, disabled: +periods === 0, hint: 'Duración de cada periodo de tiempo extra.' })}
+    ${field({ name: 'penalty_attempts_per_team', label: 'Penales iniciales por equipo', type: 'number', value: t.penalty_attempts_per_team ?? 5, required: true, min: 1, max: 10, hint: 'Tiros de cada equipo en la tanda de penales.' })}
+    ${field({ name: 'penalty_sudden_death', label: 'Si la tanda sigue empatada', type: 'select', value: t.penalty_sudden_death ?? 1, required: true, options: [{ value: 1, label: 'Muerte súbita: un tiro por equipo hasta que haya ganador' }, { value: 0, label: 'Sin muerte súbita' }], hint: 'Si la tanda sigue empatada, se tira de uno en uno hasta que haya ganador.' })}
     </div>
   </fieldset>`;
 }
@@ -63,7 +63,7 @@ function render(t) {
   const editing = Boolean(t.id);
   return dialogHeader({ eyebrow: editing ? 'Editar torneo' : 'Nuevo torneo', title: editing ? t.name : 'Crear torneo' })
     + `<form id="tournament-form" novalidate data-id="${t.id ?? ''}" data-step="${editing ? 1 : 0}"><div class="dialog__body">
-        <p class="badge badge--primary" id="wizard-progress" aria-live="polite"></p>
+        <p class="wizard-progress" id="wizard-progress" aria-live="polite"></p>
         ${requiredLegend()}${typeStep(t.type ?? 'knockout')}${dataStep(t)}${rulesStep(t)}${reviewStep()}
         <p class="form-error" role="alert"></p>
       </div><div class="dialog__footer">
@@ -81,6 +81,7 @@ function showStep(form, step) {
   form.querySelector('[data-action="wizard-next"]').hidden = step === 3;
   form.querySelector('[type="submit"]').hidden = step !== 3;
   $('#wizard-progress').textContent = `Paso ${step + 1} de 4 · ${STEPS[step]}`;
+  $('#wizard-progress').dataset.step = String(step + 1);
   if (step === 3) fillReview(form);
   form.querySelector(`[data-step="${step}"] input:not([disabled]), [data-step="${step}"] select`)?.focus();
 }

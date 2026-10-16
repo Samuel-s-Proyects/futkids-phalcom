@@ -59,7 +59,7 @@ test('programar limita la fecha a la jornada', async () => {
   const form = await until(() => app.$('#schedule-form'));
   assert.equal(form.elements.scheduled_at.min, '2026-10-24T00:00');
   assert.equal(form.elements.scheduled_at.max, '2026-10-24T23:59');
-  assert.match(app.text('#schedule-form'), /Debe jugarse dentro de Jornada 2/);
+  assert.match(app.text('#schedule-form'), /Día y hora en que se juega el partido/);
 });
 
 test('aplazar pide un motivo sin caracteres especiales y lo envía', async () => {
@@ -106,5 +106,5 @@ test('el asistente permite elegir liga con vueltas y puntos', async () => {
   assert.equal(form.querySelector('[data-rules="knockout"]').hidden, true);
   assert.equal(form.elements.penalty_attempts_per_team.disabled, true, 'las reglas de eliminación no se envían');
   assert.equal(form.elements.points_win.disabled, false);
-  assert.match(app.text('[data-rules="league"]'), /N − 1 jornadas por vuelta/);
+  assert.match(app.text('[data-rules="league"]'), /Veces que cada equipo se enfrenta/);
 });

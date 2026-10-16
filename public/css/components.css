@@ -43,24 +43,30 @@
   @media (max-width: 900px) { .menu-toggle { display: inline-grid; } }
 
   /* Badges */
+  /* Status shown as a coloured dot followed by text, never as a filled chip. */
   .badge {
+    --dot: var(--color-border-strong);
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    padding: 2px var(--space-3);
-    border-radius: var(--radius-pill);
-    background: var(--color-surface-2);
-    color: var(--color-text);
+    gap: var(--space-2);
+    color: var(--color-text-muted);
     font-size: var(--fs-xs);
     font-weight: var(--fw-semibold);
     line-height: 1.6;
     white-space: nowrap;
   }
-  .badge--success { background: var(--color-success-soft); color: var(--color-success); }
-  .badge--warning { background: var(--color-warning-soft); color: var(--color-warning); }
-  .badge--danger { background: var(--color-danger-soft); color: var(--color-danger); }
-  .badge--info { background: var(--color-info-soft); color: var(--color-info); }
-  .badge--primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .badge::before { content: ""; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
+  .badge--success { --dot: var(--color-success); color: var(--color-success); }
+  .badge--warning { --dot: var(--color-warning); color: var(--color-warning); }
+  .badge--danger { --dot: var(--color-danger); color: var(--color-danger); }
+  .badge--info { --dot: var(--color-info); color: var(--color-info); }
+  .badge--primary { --dot: var(--color-primary); color: var(--color-text); }
+
+  .wizard-progress { display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--fs-sm); font-weight: var(--fw-semibold); }
+  .wizard-progress::after { content: ""; height: 6px; border-radius: var(--radius-pill); background: linear-gradient(to right, var(--color-primary) var(--progress, 25%), var(--color-surface-2) 0); }
+  .wizard-progress[data-step="2"] { --progress: 50%; }
+  .wizard-progress[data-step="3"] { --progress: 75%; }
+  .wizard-progress[data-step="4"] { --progress: 100%; }
 
   /* Cards */
   .card {

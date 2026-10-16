@@ -31,7 +31,7 @@ export function openPostponeForm(match) {
     <form id="postpone-form" novalidate data-match="${match.id}"><div class="dialog__body">
       ${alertBox('info', 'Qué ocurre al aplazar', 'Se quitan la fecha, la cancha y el árbitro. El partido queda en «Pendientes de reprogramar» hasta que lo mueva a otra jornada o lo programe de nuevo.')}
       ${requiredLegend()}
-      ${field({ name: 'reason', label: 'Motivo', type: 'textarea', required: true, rule: 'description', maxlength: 255, placeholder: 'Ej.: Cancha inundada por la lluvia.', hint: 'Queda en el historial del partido. Sin símbolos como < > @ #.' })}
+      ${field({ name: 'reason', label: 'Motivo', type: 'textarea', required: true, rule: 'description', maxlength: 255, placeholder: 'Ej.: Cancha inundada por la lluvia.', hint: 'Por qué no se juega; queda en el historial del partido.' })}
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">
       ${button('Volver al partido', { action: 'back-to-match', data: { id: match.id } })}
@@ -44,7 +44,7 @@ export function openMoveForm(match) {
   openDialog(`${dialogHeader({ eyebrow: 'Mover de jornada', title: `${teamName(match.home_team_id)} vs. ${teamName(match.away_team_id)}`, subtitle: `Ahora: ${matchdayName(matchdayOf(match))}` })}
     <form id="move-form" novalidate data-match="${match.id}"><div class="dialog__body">
       ${options.length
-        ? `${requiredLegend()}${field({ name: 'matchday_id', label: 'Nueva jornada', type: 'select', required: true, placeholder: 'Seleccione la jornada', options: options.map(day => ({ value: day.id, label: matchdayName(day) })), hint: 'Solo aparecen jornadas futuras en las que ninguno de los dos equipos juega.' })}`
+        ? `${requiredLegend()}${field({ name: 'matchday_id', label: 'Nueva jornada', type: 'select', required: true, placeholder: 'Seleccione la jornada', options: options.map(day => ({ value: day.id, label: matchdayName(day) })), hint: 'Jornada en la que se jugará el partido.' })}`
         : alertBox('warning', 'No hay jornadas disponibles', 'Cree una jornada extraordinaria en la pestaña Calendario y vuelva a intentarlo.')}
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">

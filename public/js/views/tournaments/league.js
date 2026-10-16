@@ -81,8 +81,8 @@ function openFixture() {
     <form id="fixture-form" novalidate><div class="dialog__body">
       ${requiredLegend()}
       <div class="form-grid">
-        ${field({ name: 'first_date', label: 'Fecha de la primera jornada', type: 'date', value: first, required: true, min: first, max: t.end_date, hint: 'No antes de hoy ni del inicio del torneo.' })}
-        ${field({ name: 'interval_days', label: 'Días entre jornadas', type: 'number', value: 7, required: true, min: 1, max: 30, hint: '7 = una jornada por semana. Después podrá ajustar cada fecha.' })}
+        ${field({ name: 'first_date', label: 'Fecha de la primera jornada', type: 'date', value: first, required: true, min: first, max: t.end_date, hint: 'Día en que se juega la jornada 1.' })}
+        ${field({ name: 'interval_days', label: 'Días entre jornadas', type: 'number', value: 7, required: true, min: 1, max: 30, hint: 'Separación entre una jornada y la siguiente.' })}
       </div>
       <div>${button('Ver propuesta', { type: 'submit', iconName: 'eye' })}</div>
       <p class="form-error" role="alert"></p>
@@ -135,9 +135,9 @@ function matchdayForm(matchday = null) {
     <form id="matchday-form" novalidate data-id="${matchday?.id ?? ''}"><div class="dialog__body">
       ${requiredLegend()}
       <div class="form-grid">
-        ${field({ name: 'game_date', label: 'Primer día', type: 'date', value: matchday?.game_date ?? '', required: true, min: today(), max: t.end_date, hint: `Dentro del torneo (hasta el ${date(t.end_date)}) y no antes de hoy.` })}
-        ${field({ name: 'end_date', label: 'Último día', type: 'date', value: matchday?.end_date ?? '', min: today(), max: t.end_date, hint: 'Solo si la jornada dura varios días (por ejemplo, sábado y domingo).' })}
-        ${!matchday || matchday.kind === 'extraordinary' ? field({ name: 'label', label: 'Nombre', value: matchday?.label ?? 'Jornada extraordinaria', rule: 'title', maxlength: 100, full: true, hint: 'Ej.: Reposición de partidos aplazados.' }) : ''}
+        ${field({ name: 'game_date', label: 'Primer día', type: 'date', value: matchday?.game_date ?? '', required: true, min: today(), max: t.end_date, hint: 'Día en que se juega la jornada.' })}
+        ${field({ name: 'end_date', label: 'Último día', type: 'date', value: matchday?.end_date ?? '', min: today(), max: t.end_date, hint: 'Último día, si la jornada dura varios días.' })}
+        ${!matchday || matchday.kind === 'extraordinary' ? field({ name: 'label', label: 'Nombre', value: matchday?.label ?? 'Jornada extraordinaria', rule: 'title', maxlength: 100, full: true, hint: 'Nombre para identificar la jornada.' }) : ''}
       </div>
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">
@@ -165,7 +165,7 @@ onAction('extend-end-date', () => {
   const t = store.tournament;
   openDialog(`${dialogHeader({ eyebrow: 'Torneo', title: 'Extender fecha final', subtitle: `Hoy termina el ${date(t.end_date)}.` })}
     <form id="end-date-form" novalidate><div class="dialog__body">
-      ${field({ name: 'end_date', label: 'Nueva fecha final', type: 'date', required: true, min: t.end_date, hint: 'Solo se puede extender, para dar espacio a jornadas extraordinarias o partidos aplazados.' })}
+      ${field({ name: 'end_date', label: 'Nueva fecha final', type: 'date', required: true, min: t.end_date, hint: 'Día en que terminará el torneo.' })}
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer"><button class="button" type="button" data-action="close-dialog">Cancelar</button>${button('Extender', { type: 'submit', tone: 'primary', iconName: 'check' })}</div></form>`);
 });

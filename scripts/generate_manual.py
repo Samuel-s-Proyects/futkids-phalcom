@@ -2,7 +2,7 @@
 from pathlib import Path
 from xml.sax.saxutils import escape
 import sys
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Flowable, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Flowable, KeepTogether, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
@@ -11,6 +11,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'docs/Manual_Tecnico_FutKids.pdf'
 LOGO = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / 'docs/umg-logo.jpg'
+BRAND = ROOT / 'docs/futkids-logo.png'
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 FONT = Path('/usr/share/fonts/truetype/dejavu')
 for name, filename in [('Sans','DejaVuSans.ttf'),('SansBold','DejaVuSans-Bold.ttf'),('Mono','DejaVuSansMono.ttf')]:
@@ -32,7 +33,6 @@ styles.add(ParagraphStyle(name='SubX',fontName='SansBold',fontSize=11.2,leading=
 styles.add(ParagraphStyle(name='CodeX',fontName='Mono',fontSize=8,leading=12,textColor=DARK,backColor=LIGHT,borderPadding=10,spaceBefore=6,spaceAfter=12))
 styles.add(ParagraphStyle(name='CellX',fontName='Sans',fontSize=8.4,leading=12,textColor=INK))
 styles.add(ParagraphStyle(name='HeadX',fontName='SansBold',fontSize=8,leading=12,textColor=colors.white))
-styles.add(ParagraphStyle(name='CoverX',fontName='SansBold',fontSize=48,leading=57,textColor=DARK,spaceAfter=10))
 styles.add(ParagraphStyle(name='CoverSub',fontName='Sans',fontSize=19,leading=27,textColor=GRAY,spaceAfter=22))
 story=[]
 def p(text,style='BodyX'): return Paragraph(text,styles[style])
@@ -78,7 +78,7 @@ def header(c,doc):
     c.drawRightString(562,35,'Versión 1.0 · Octubre 2026')
     c.restoreState()
 
-story.append(Spacer(1,117));add('FUTKIDS','CoverX');add('La liga de las futuras estrellas.','CoverSub')
+story.append(Spacer(1,90));story.append(Image(str(BRAND),width=300,height=300*458/1200,hAlign='LEFT'));story.append(Spacer(1,18));add('La liga de las futuras estrellas.','CoverSub')
 add('Aplicación para administrar un torneo infantil de fútbol','SubX');add('Manual técnico de instalación, uso del framework y publicación.')
 story.append(Spacer(1,25))
 table(['Proyecto','Tecnología'],[['Aplicar un framework de desarrollo PHP','PHP 8.3 + Phalcon 5.22.1'],['Equipos, jugadores, goles e incidencias','MVC · Volt · MySQL / MariaDB']], [300,212])

@@ -18,12 +18,12 @@ export function openIncidentForm(match, incidentId = 0) {
       ${requiredLegend()}
       <div class="form-grid">
         ${field({ name: 'player_id', label: 'Jugador', type: 'select', value: incident.player_id ?? '', required: true, placeholder: 'Seleccione el jugador', options: players, full: true })}
-        ${field({ name: 'minute', label: 'Minuto', type: 'number', value: incident.minute ?? '', required: true, min: 0, max: 150, hint: 'De 0 a 150.' })}
+        ${field({ name: 'minute', label: 'Minuto', type: 'number', value: incident.minute ?? '', required: true, min: 0, max: 150, hint: 'Minuto en que se mostró la tarjeta.' })}
         ${field({ name: 'card_type', label: 'Tarjeta', type: 'select', value: incident.card_type ?? 'yellow', required: true, change: 'card-type', options: [{ value: 'yellow', label: 'Amarilla' }, { value: 'red', label: 'Roja (expulsión)' }] })}
         <div class="field--full" id="suspension-wrapper" ${red ? '' : 'hidden'}>
-          ${field({ name: 'suspension_date', label: 'Fecha de suspensión', type: 'date', value: incident.suspension_date ?? '', required: red, min: matchDate(match), max: store.tournament?.end_date ?? '', hint: 'Día en que el jugador no podrá jugar. Igual o posterior a la fecha de este partido.' })}
+          ${field({ name: 'suspension_date', label: 'Fecha de suspensión', type: 'date', value: incident.suspension_date ?? '', required: red, min: matchDate(match), max: store.tournament?.end_date ?? '', hint: 'Día en que el jugador no podrá jugar.' })}
         </div>
-        ${field({ name: 'description', label: 'Descripción', type: 'textarea', value: incident.description ?? '', required: true, rule: 'description', maxlength: 500, full: true, placeholder: 'Ej.: Falta por detrás en la mitad de la cancha.', hint: 'Breve y clara. Se permiten signos de puntuación comunes; no use < > { } [ ] @ # $ %.' })}
+        ${field({ name: 'description', label: 'Descripción', type: 'textarea', value: incident.description ?? '', required: true, rule: 'description', maxlength: 500, full: true, placeholder: 'Ej.: Falta por detrás en la mitad de la cancha.', hint: 'Qué ocurrió.' })}
       </div>
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">

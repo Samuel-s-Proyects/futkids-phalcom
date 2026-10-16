@@ -26,10 +26,9 @@ final class MatchAccess
         return $user;
     }
 
-    /** Disciplinary incidents are written only by the assigned referee while the match is being played. */
-    public function activeReferee(TournamentMatch $match, int $userId): User {
+    /** Disciplinary incidents are written by the assigned referee or an administrator while the match is being played. */
+    public function activeOperator(TournamentMatch $match, int $userId): User {
         $user = $this->operator($match, $userId);
-        if ($user->role !== 'referee') throw new HttpException('Solo el árbitro asignado puede registrar incidencias durante el partido.', 403);
         if ($match->workflow_status !== TournamentMatch::IN_PROGRESS) throw new HttpException('Las incidencias solo se pueden modificar mientras el partido está en juego.', 409);
         return $user;
     }

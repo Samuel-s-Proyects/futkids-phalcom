@@ -41,12 +41,12 @@ test('los campos tienen etiqueta, hint y error enlazados', async () => {
   app.click('[data-action="new-record"][data-entity="players"]');
   const name = await until(() => app.$('#record-form [name="first_name"]'));
   const [hintId, errorId] = name.getAttribute('aria-describedby').split(' ');
-  assert.match(app.document.getElementById(hintId).textContent, /Solo letras/);
+  assert.match(app.document.getElementById(hintId).textContent, /Nombre o nombres/);
   assert.ok(app.document.getElementById(errorId));
   assert.equal(app.document.querySelector(`label[for="${name.id}"]`).textContent.replace('*', '').trim(), 'Nombres');
   const shirt = app.$('#record-form [name="shirt_number"]');
   assert.equal(shirt.getAttribute('inputmode'), 'numeric');
-  assert.match(app.$('#record-form').textContent, /Edad permitida: de 5 a 14 años/);
+  assert.match(app.$('#record-form').textContent, /categoría por edad/);
 });
 
 test('la validación en vivo rechaza caracteres especiales y números fuera de rango', async () => {

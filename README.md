@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/futkids-logo.png" alt="FutKids" width="420"></p>
+
 # FutKids · La liga de las futuras estrellas
 
 Aplicación real en **PHP 8.3 y Phalcon 5.22.1**, con MVC, modelos ORM, vistas Volt y MySQL/MariaDB. Gestiona torneos de **clasificación** (eliminación directa) y **por puntos** (liga por jornadas), equipos, jugadores con fotografía, partidos con hoja de goles, tarjetas y suspensiones, reportes, y cuentas de administradores y árbitros.

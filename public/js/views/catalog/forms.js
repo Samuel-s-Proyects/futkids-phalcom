@@ -3,7 +3,7 @@ import { api } from '../../core/api.js';
 import { today } from '../../core/clock.js';
 import { $, esc } from '../../core/dom.js';
 import { onAction, onChange, onSubmit } from '../../core/events.js';
-import { date, fullName } from '../../core/format.js';
+import { fullName } from '../../core/format.js';
 import { rerender } from '../../core/router.js';
 import { isAdmin, loadState, store, teamName } from '../../core/store.js';
 import { button, photoUrl } from '../../ui/components.js';
@@ -21,30 +21,30 @@ const playerOptions = () => store.data.players.map(p => ({ value: p.id, label: `
 
 const FIELDS = {
   teams: r => [
-    field({ name: 'name', label: 'Nombre del equipo', value: r.name, required: true, rule: 'title', maxlength: 100, full: true, placeholder: 'Ej.: Leones de Petapa', hint: 'Letras y números; puede separar con espacio, guion o punto. Sin símbolos como # @ / & %. No puede repetirse.' }),
-    field({ name: 'active', label: 'Estado', type: 'select', value: r.active ?? 1, required: true, options: [{ value: 1, label: 'Activo' }, { value: 0, label: 'Inactivo' }], full: true, hint: 'Solo los equipos activos pueden inscribirse en torneos y recibir jugadores nuevos.' }),
+    field({ name: 'name', label: 'Nombre del equipo', value: r.name, required: true, rule: 'title', maxlength: 100, full: true, placeholder: 'Ej.: Leones de Petapa', hint: 'Nombre con el que se identifica al equipo.' }),
+    field({ name: 'active', label: 'Estado', type: 'select', value: r.active ?? 1, required: true, options: [{ value: 1, label: 'Activo' }, { value: 0, label: 'Inactivo' }], full: true, hint: 'Indica si el equipo participa en torneos.' }),
   ],
   players: r => {
     const reference = store.settings.age_reference_date;
     const removable = r.id && /^uploads\/players\/[a-f0-9]{32}\.jpg$/.test(r.photo_path ?? '');
     return [
       `<div class="photo-upload field--full"><img id="photo-preview" src="${esc(photoUrl(r.photo_path))}" data-current="${esc(photoUrl(r.photo_path))}" alt="Vista previa de la fotografía">
-        <div class="stack">${field({ name: 'photo', label: 'Fotografía', type: 'file', accept: 'image/jpeg,image/png', change: 'player-photo', hint: 'JPG o PNG de hasta 2 MB. Si no sube una, se usa una silueta.' })}
+        <div class="stack">${field({ name: 'photo', label: 'Fotografía', type: 'file', accept: 'image/jpeg,image/png', change: 'player-photo', hint: 'Foto del jugador; sin ella se muestra una silueta.' })}
         ${removable ? '<label class="check"><input type="checkbox" name="remove_photo" value="1" data-change="remove-photo"> Quitar la fotografía actual</label>' : ''}</div></div>`,
-      field({ name: 'first_name', label: 'Nombres', value: r.first_name, required: true, rule: 'person_name', maxlength: 100, autocomplete: 'off', hint: 'Solo letras; puede usar espacio, guion o apóstrofo (ej.: María José, Jean-Luc, O\'Brien).' }),
-      field({ name: 'last_name', label: 'Apellidos', value: r.last_name, required: true, rule: 'person_name', maxlength: 100, autocomplete: 'off', hint: 'Solo letras, igual que los nombres.' }),
-      field({ name: 'birth_date', label: 'Fecha de nacimiento', type: 'date', value: r.birth_date, required: true, max: today() < reference ? today() : reference, hint: `Edad permitida: de ${store.settings.age_min} a ${store.settings.age_max} años al ${date(reference)}.` }),
-      field({ name: 'team_id', label: 'Equipo', type: 'select', value: r.team_id, required: true, placeholder: 'Seleccione un equipo', options: teamOptions({ activeOnly: true, keep: r.team_id }), hint: r.id ? 'Un jugador con goles o tarjetas no puede cambiar de equipo.' : 'Solo equipos activos.' }),
-      field({ name: 'shirt_number', label: 'Número de camiseta', type: 'number', value: r.shirt_number ?? '', min: 1, max: 99, hint: 'Del 1 al 99, sin repetir dentro del mismo equipo.' }),
+      field({ name: 'first_name', label: 'Nombres', value: r.first_name, required: true, rule: 'person_name', maxlength: 100, autocomplete: 'off', hint: 'Nombre o nombres del jugador.' }),
+      field({ name: 'last_name', label: 'Apellidos', value: r.last_name, required: true, rule: 'person_name', maxlength: 100, autocomplete: 'off', hint: 'Apellido o apellidos del jugador.' }),
+      field({ name: 'birth_date', label: 'Fecha de nacimiento', type: 'date', value: r.birth_date, required: true, max: today() < reference ? today() : reference, hint: 'Define la categoría por edad del jugador.' }),
+      field({ name: 'team_id', label: 'Equipo', type: 'select', value: r.team_id, required: true, placeholder: 'Seleccione un equipo', options: teamOptions({ activeOnly: true, keep: r.team_id }), hint: 'Equipo en el que juega.' }),
+      field({ name: 'shirt_number', label: 'Número de camiseta', type: 'number', value: r.shirt_number ?? '', min: 1, max: 99, hint: 'Número de la camiseta.' }),
       field({ name: 'position', label: 'Posición', type: 'select', value: r.position ?? '', placeholder: 'Sin especificar', options: store.settings.positions.map(p => ({ value: p, label: p })) }),
     ];
   },
   incidents: r => [
     field({ name: 'player_id', label: 'Jugador', type: 'select', value: r.player_id, required: true, placeholder: 'Seleccione un jugador', options: playerOptions(), full: true }),
     field({ name: 'card_type', label: 'Tarjeta', type: 'select', value: r.card_type ?? 'yellow', required: true, change: 'manual-card', options: [{ value: 'yellow', label: 'Amarilla' }, { value: 'red', label: 'Roja (suspende un día)' }] }),
-    field({ name: 'incident_date', label: 'Fecha de la incidencia', type: 'date', value: r.incident_date ?? today(), required: true, max: today(), change: 'manual-incident-date', hint: 'No puede ser una fecha futura.' }),
-    `<div class="field--full" id="manual-suspension" ${r.card_type === 'red' ? '' : 'hidden'}>${field({ name: 'suspension_date', label: 'Fecha de suspensión', type: 'date', value: r.suspension_date ?? '', required: r.card_type === 'red', min: r.incident_date ?? today(), hint: 'El jugador no podrá jugar ese día. Igual o posterior a la incidencia.' })}</div>`,
-    field({ name: 'description', label: 'Descripción', type: 'textarea', value: r.description, required: true, rule: 'description', maxlength: 500, full: true, hint: 'Qué ocurrió. Se permiten signos de puntuación comunes; no use < > { } [ ] @ # $ %.' }),
+    field({ name: 'incident_date', label: 'Fecha de la incidencia', type: 'date', value: r.incident_date ?? today(), required: true, max: today(), change: 'manual-incident-date', hint: 'Día en que ocurrió.' }),
+    `<div class="field--full" id="manual-suspension" ${r.card_type === 'red' ? '' : 'hidden'}>${field({ name: 'suspension_date', label: 'Fecha de suspensión', type: 'date', value: r.suspension_date ?? '', required: r.card_type === 'red', min: r.incident_date ?? today(), hint: 'Día en que el jugador no podrá jugar.' })}</div>`,
+    field({ name: 'description', label: 'Descripción', type: 'textarea', value: r.description, required: true, rule: 'description', maxlength: 500, full: true, hint: 'Qué ocurrió.' }),
   ],
 };
 

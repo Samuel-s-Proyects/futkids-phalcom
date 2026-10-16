@@ -14,7 +14,7 @@ let accounts = [];
 
 const ROLE_LABELS = { admin: 'Administrador', referee: 'Árbitro' };
 const minLength = () => store.settings.password_min_length ?? 10;
-const passwordHint = () => `Mínimo ${minLength()} caracteres, con letras y números, y distinta del correo.`;
+const passwordHint = () => 'Clave para ingresar a la cuenta.';
 
 /** Random temporary password that satisfies the policy (letters and digits, no ambiguous characters). */
 export function suggestPassword(length = 12) {
@@ -63,10 +63,10 @@ function userForm(user = {}) {
     <form id="user-form" novalidate data-id="${user.id ?? ''}"><div class="dialog__body">
       ${requiredLegend()}
       <div class="form-grid">
-        ${field({ name: 'name', label: 'Nombre completo', value: user.name, required: true, rule: 'person_name', maxlength: 100, full: true, hint: 'Solo letras; puede usar espacio, guion o apóstrofo.' })}
-        ${field({ name: 'email', label: 'Correo electrónico', type: 'email', value: user.email, required: true, maxlength: 200, full: true, autocomplete: 'off', hint: 'Con este correo ingresará a FutKids. No puede repetirse.' })}
-        ${field({ name: 'role', label: 'Rol', type: 'select', value: user.role ?? 'referee', required: true, disabled: self, full: true, options: [{ value: 'referee', label: 'Árbitro' }, { value: 'admin', label: 'Administrador' }], hint: self ? 'No puede cambiar su propio rol.' : 'Un árbitro con partidos pendientes no puede cambiar de rol hasta reasignarlos.' })}
-        ${editing ? '' : `${field({ name: 'password', label: 'Contraseña temporal', value: suggestPassword(), required: true, maxlength: 200, full: true, autocomplete: 'new-password', hint: `${passwordHint()} Compártala con la persona: deberá cambiarla al ingresar.` })}`}
+        ${field({ name: 'name', label: 'Nombre completo', value: user.name, required: true, rule: 'person_name', maxlength: 100, full: true, hint: 'Nombre completo de la persona.' })}
+        ${field({ name: 'email', label: 'Correo electrónico', type: 'email', value: user.email, required: true, maxlength: 200, full: true, autocomplete: 'off', hint: 'Correo con el que ingresará a FutKids.' })}
+        ${field({ name: 'role', label: 'Rol', type: 'select', value: user.role ?? 'referee', required: true, disabled: self, full: true, options: [{ value: 'referee', label: 'Árbitro' }, { value: 'admin', label: 'Administrador' }], hint: self ? 'Su propio rol no se puede cambiar.' : 'Define lo que la cuenta puede hacer.' })}
+        ${editing ? '' : `${field({ name: 'password', label: 'Contraseña temporal', value: suggestPassword(), required: true, maxlength: 200, full: true, autocomplete: 'new-password', hint: 'Compártala con la persona: deberá cambiarla al ingresar.' })}`}
       </div>
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">

@@ -13,7 +13,6 @@ export async function ensureTournamentFor(matchId, tournamentId = 0) {
 
 /** Administrators, or the referee assigned to this match. */
 export const canOperate = match => isAdmin() || (isReferee() && +match.referee_user_id === +store.user.id);
-export const isAssignedReferee = match => isReferee() && +match.referee_user_id === +store.user.id;
 
 export const matchDate = match => String(match.scheduled_at ?? '').slice(0, 10);
 

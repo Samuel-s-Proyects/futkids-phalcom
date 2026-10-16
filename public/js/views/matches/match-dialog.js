@@ -8,7 +8,7 @@ import { periodLabel } from '../../domain/score.js';
 import { alertBox, badge, button, iconButton } from '../../ui/components.js';
 import { confirmDialog, dialogHeader, openDialog } from '../../ui/dialog.js';
 import { toast } from '../../ui/toast.js';
-import { canOperate, currentMatch, ensureTournamentFor, isAssignedReferee, matchChange, matchEvents, matchIncidents } from './common.js';
+import { canOperate, currentMatch, ensureTournamentFor, matchChange, matchEvents, matchIncidents } from './common.js';
 import { openGoalForm } from './goal-form.js';
 import { openIncidentForm } from './incident-form.js';
 import { matchdayName, matchdayOf, openMoveForm, openPostponeForm } from './league-actions.js';
@@ -33,7 +33,7 @@ function goalsList(events, extraMinutes) {
 
 function incidentsList(match, incidents) {
   if (!incidents.length) return '<p class="muted">Sin tarjetas registradas.</p>';
-  const editable = isAssignedReferee(match) && match.workflow_status === 'in_progress';
+  const editable = canOperate(match) && match.workflow_status === 'in_progress';
   return `<ol class="timeline">${incidents.sort((a, b) => a.minute - b.minute).map(i => `<li><span class="timeline__minute">${i.minute}′</span>${badge(i.card_type === 'red' ? 'Roja' : 'Amarilla', i.card_type === 'red' ? 'danger' : 'warning')}<span><strong>${esc(fullName(player(i.player_id)))}</strong> · ${esc(i.description)}${i.suspension_date ? ` · Suspendido el ${esc(i.suspension_date.split('-').reverse().join('/'))}` : ''}</span>${editable ? `${iconButton('edit', 'Editar tarjeta', { action: 'edit-incident', data: { id: i.id, match: match.id } })}${iconButton('delete', 'Eliminar tarjeta', { action: 'delete-incident', data: { id: i.id, match: match.id }, danger: true })}` : ''}</li>`).join('')}</ol>`;
 }
 
@@ -59,8 +59,8 @@ function actions(match) {
       if (operator) list.push(button('Iniciar partido', { action: 'start-match', data: id, tone: 'primary', iconName: 'play' }));
       break;
     case 'in_progress':
-      if (isAssignedReferee(match)) list.push(button('Registrar tarjeta', { action: 'new-incident', data: id, iconName: 'card' }));
       if (operator) {
+        list.push(button('Registrar tarjeta', { action: 'new-incident', data: id, iconName: 'card' }));
         list.push(button('Registrar gol', { action: 'new-goal', data: id, iconName: 'ball' }));
         list.push(button('Finalizar y enviar resultado', { action: 'open-sheet', data: { ...id, mode: 'result' }, tone: 'primary', iconName: 'check' }));
       }

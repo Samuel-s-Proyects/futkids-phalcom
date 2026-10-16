@@ -25,7 +25,7 @@ test('las pestañas son enlaces con dirección propia', () => {
   const tabs = app.$$('.tabs a');
   assert.deepEqual(tabs.map(tab => tab.getAttribute('href')), ['#torneos/1/resumen', '#torneos/1/equipos', '#torneos/1/cuadro', '#torneos/1/goleadores']);
   assert.equal(app.$('.tabs a[aria-current="page"]').textContent, 'Cuadro');
-  assert.match(app.text('#breadcrumb'), /Copa Apertura/);
+  assert.match(app.text('.page-header'), /Copa Apertura/);
 });
 
 test('el cuadro muestra rondas con nombre y partidos sin rival como "Por definir"', () => {
@@ -33,11 +33,11 @@ test('el cuadro muestra rondas con nombre y partidos sin rival como "Por definir
   assert.match(app.text('.bracket__round:last-child'), /Por definir/);
 });
 
-test('el diálogo del partido en juego ofrece registrar gol y finalizar', async () => {
+test('el diálogo del partido en juego ofrece registrar tarjeta, gol y finalizar', async () => {
   app.click('.match-card[data-id="11"]');
   await until(() => app.$('#wide-dialog').open);
   const actions = app.$$('#wide-dialog .dialog__footer button').map(button => button.textContent.trim());
-  assert.deepEqual(actions, ['Cerrar', 'Registrar gol', 'Finalizar y enviar resultado']);
+  assert.deepEqual(actions, ['Cerrar', 'Registrar tarjeta', 'Registrar gol', 'Finalizar y enviar resultado']);
   assert.match(app.text('#wide-dialog .scoreboard'), /0 – 0/);
 });
 

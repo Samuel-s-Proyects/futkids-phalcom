@@ -50,17 +50,6 @@ function renderNavigation(active) {
   }).join('');
 }
 
-function renderBreadcrumb(section, params) {
-  if (section.key === 'panel') {
-    $('#breadcrumb').innerHTML = `<strong>${esc(section.label)}</strong>`;
-    return;
-  }
-  const parts = [`<a href="#panel">Inicio</a>`];
-  parts.push(params.length ? `<a href="#${section.key}">${esc(section.label)}</a>` : `<strong>${esc(section.label)}</strong>`);
-  if (section.key === 'torneos' && params[0] && store.tournament && +store.tournament.id === +params[0]) parts.push(`<strong>${esc(store.tournament.name)}</strong>`);
-  $('#breadcrumb').innerHTML = parts.join('<span aria-hidden="true">/</span>');
-}
-
 function setMenu(open) {
   $('#sidebar').classList.toggle('is-open', open);
   $('#sidebar-backdrop').classList.toggle('is-visible', open);
@@ -102,7 +91,6 @@ async function show(route, { refresh = false } = {}) {
     if (generation !== renderGeneration) return;
     main.innerHTML = emptyState('No se pudo mostrar esta sección', error.message, 'alert');
   }
-  renderBreadcrumb(section, route.params);
   document.title = `${section.label} · FutKids`;
   // A temporary password must be replaced before anything else; navigation closes dialogs, so reopen it.
   if (store.user.must_change_password && !$('#own-password-form')) openOwnPassword(true);

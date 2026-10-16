@@ -29,9 +29,9 @@ export function openGoalForm(match) {
       <div class="form-grid">
         ${field({ name: 'credited_team', label: '¿Para qué equipo cuenta el gol?', type: 'select', required: true, placeholder: 'Seleccione el equipo', change: 'goal-form', full: true, options: [match.home_team_id, match.away_team_id].map(id => ({ value: id, label: teamName(id) })) })}
         <label class="check field--full"><input type="checkbox" name="own_goal" value="1" data-change="goal-form"> Fue autogol (lo marcó un jugador del equipo rival)</label>
-        ${field({ name: 'player_id', label: 'Jugador que anotó', type: 'select', required: true, placeholder: 'Primero elija el equipo', disabled: true, hint: 'Los jugadores suspendidos para esta fecha no aparecen.' })}
-        ${field({ name: 'minute', label: 'Minuto', type: 'number', required: true, min: 0, max: 150, hint: 'De 0 a 150.' })}
-        ${+t.extra_time_periods ? field({ name: 'period_number', label: 'Momento del partido', type: 'select', value: 0, required: true, options: periodOptions(t), full: true, hint: 'Elija tiempo extra solo si el tiempo reglamentario terminó empatado.' }) : ''}
+        ${field({ name: 'player_id', label: 'Jugador que anotó', type: 'select', required: true, placeholder: 'Primero elija el equipo', disabled: true, hint: 'Jugador que anotó el gol.' })}
+        ${field({ name: 'minute', label: 'Minuto', type: 'number', required: true, min: 0, max: 150, hint: 'Minuto en que se anotó.' })}
+        ${+t.extra_time_periods ? field({ name: 'period_number', label: 'Momento del partido', type: 'select', value: 0, required: true, options: periodOptions(t), full: true, hint: 'Parte del partido en que se anotó.' }) : ''}
       </div>
       <p class="form-error" role="alert"></p>
     </div><div class="dialog__footer">

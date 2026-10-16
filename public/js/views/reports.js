@@ -34,7 +34,7 @@ function filtersForm(kind) {
   const parts = [field({ name: 'team_id', label: 'Equipo', type: 'select', value: f.team_id, placeholder: 'Todos los equipos', options: teams, change: 'report-team', hideOptional: true })];
   if (kind === 'arbitro') {
     parts.push(
-      field({ name: 'match_id', label: 'Partido', type: 'select', value: f.match_id, placeholder: 'Seleccione un partido', options: scheduledMatches().map(m => ({ value: m.id, label: matchLabel(m) })), change: 'report-referee-source', hideOptional: true, hint: 'Solo aparecen partidos con fecha.' }),
+      field({ name: 'match_id', label: 'Partido', type: 'select', value: f.match_id, placeholder: 'Seleccione un partido', options: scheduledMatches().map(m => ({ value: m.id, label: matchLabel(m) })), change: 'report-referee-source', hideOptional: true }),
       field({ name: 'matchday_id', label: 'O una jornada', type: 'select', value: f.matchday_id, placeholder: 'Ninguna', options: matchdays, change: 'report-referee-source', hideOptional: true }),
     );
   }

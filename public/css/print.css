@@ -2,7 +2,7 @@
   @media print {
     @page { margin: 14mm; }
     body { background: white; color: black; font-size: 11pt; }
-    .sidebar, .topbar, .main-footer, .toolbar, .report-filters, .page-header__actions, .tabs,
+    .sidebar, .topbar, .toolbar, .report-filters, .page-header__actions, .tabs,
     .row-actions, .dialog__footer, .button, .icon-button, .toast, .sidebar-backdrop { display: none !important; }
     .workspace { margin: 0; }
     main { padding: 0; max-width: none; }

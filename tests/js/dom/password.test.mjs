@@ -17,7 +17,7 @@ test('una contraseña temporal obliga a crear una nueva al ingresar', async () =
   assert.equal(form.dataset.forced, '1');
   assert.equal(app.$('#form-dialog [data-action="close-dialog"]'), null, 'no se puede cerrar sin cambiarla');
   assert.ok(app.$('#form-dialog [data-action="logout"]'));
-  assert.match(app.text('#own-password-form'), /Mínimo 10 caracteres/);
+  assert.match(app.text('#own-password-form'), /Clave para ingresar/);
 });
 
 test('las contraseñas nuevas deben coincidir', () => {

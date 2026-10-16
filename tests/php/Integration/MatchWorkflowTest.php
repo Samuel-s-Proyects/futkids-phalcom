@@ -65,7 +65,7 @@ final class MatchWorkflowTest extends IntegrationTestCase
         $this->assertRejected(fn() => $this->sheet->start($this->matchModel($id, (int)$match['id']), self::REFEREE_ID), 409);
     }
 
-    public function testOnlyAssignedRefereeManagesIncidentsDuringPlay(): void {
+    public function testAssignedRefereeOrAdministratorManageIncidentsDuringPlay(): void {
         [$id, $match] = $this->twoTeamMatchInProgress();
         $matchId = (int)$match['id'];
         $player = $this->playersOf((int)$match['home_team_id'])[0];
@@ -73,7 +73,8 @@ final class MatchWorkflowTest extends IntegrationTestCase
         $incident = $this->incidents->save($model(), self::REFEREE_ID, ['player_id' => (int)$player['id'], 'minute' => 12, 'card_type' => 'yellow', 'description' => 'Falta táctica']);
         $this->assertSame([(int)$player['team_id'], 12, '2026-12-05'], [(int)$incident['team_id'], (int)$incident['minute'], $incident['incident_date']]);
 
-        $this->assertRejected(fn() => $this->incidents->save($model(), self::ADMIN_ID, ['player_id' => (int)$player['id'], 'minute' => 13, 'card_type' => 'yellow', 'description' => 'Prueba']), 403);
+        $byAdmin = $this->incidents->save($model(), self::ADMIN_ID, ['player_id' => (int)$player['id'], 'minute' => 13, 'card_type' => 'yellow', 'description' => 'Prueba']);
+        $this->incidents->delete($model(), self::ADMIN_ID, (int)$byAdmin['id']);
         $this->assertRejected(fn() => $this->catalog->save('incidents', ['player_id' => (int)$player['id'], 'description' => 'Cambio externo', 'card_type' => 'yellow', 'incident_date' => '2026-10-16'], (int)$incident['id']), 403);
         $this->assertRejected(fn() => $this->catalog->delete('incidents', (int)$incident['id']), 403);
         $this->assertRejected(fn() => $this->incidents->save($model(), self::REFEREE_ID, ['player_id' => 999, 'minute' => 200, 'card_type' => 'green', 'description' => '<b>']), 422);

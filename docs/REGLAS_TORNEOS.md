@@ -75,7 +75,7 @@ Orden de desempate:
 ## Tarjetas y suspensiones
 
 - Una amarilla no suspende. Una roja exige una fecha de suspensión, igual o posterior a la incidencia; el jugador no puede jugar ese día.
-- Las tarjetas de un partido solo las registra el árbitro asignado mientras se juega.
+- Las tarjetas de un partido las registra el árbitro asignado o un administrador mientras se juega.
 - Una incidencia registrada fuera de un partido no puede tener fecha futura.
 
 ## Validación de datos

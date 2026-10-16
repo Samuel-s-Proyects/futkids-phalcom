@@ -7,7 +7,7 @@ test('el formulario de equipo rechaza caracteres especiales antes de enviar', as
   await page.goto('/#equipos');
   await page.getByRole('button', { name: 'Nuevo equipo' }).click();
   const name = dialogField(page, 'Nombre del equipo');
-  await expect(page.locator('dialog[open]')).toContainText('Sin símbolos como # @ / & %');
+  await expect(page.locator('dialog[open]')).toContainText('Nombre con el que se identifica al equipo');
   await name.fill('Equipo #1 <b>');
   await page.locator('dialog[open]').getByRole('button', { name: 'Guardar' }).click();
   await expect(await fieldError(name)).toContainText('Use letras y números');

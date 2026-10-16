@@ -8,13 +8,13 @@ use App\Models\Player;
 use App\Models\TournamentMatch;
 use App\Validation\Validator;
 
-/** Cards shown during a match, recorded by the assigned referee while it is being played. */
+/** Cards shown during a match, recorded by the assigned referee or an administrator while it is being played. */
 final class MatchIncidentService
 {
     public function __construct(private MatchAccess $access, private MatchAudit $audit) {}
 
     public function save(TournamentMatch $match, int $actorId, array $input, int $incidentId = 0): array {
-        $this->access->activeReferee($match, $actorId);
+        $this->access->activeOperator($match, $actorId);
         $matchDate = $match->matchDate();
         $v = new Validator($input);
         $playerId = $v->integer('player_id', 1, PHP_INT_MAX);
@@ -49,7 +49,7 @@ final class MatchIncidentService
     }
 
     public function delete(TournamentMatch $match, int $actorId, int $incidentId): void {
-        $this->access->activeReferee($match, $actorId);
+        $this->access->activeOperator($match, $actorId);
         $incident = $this->incident($match, $incidentId);
         $snapshot = $incident->toArray();
         $incident->deleteOrFail('No se pudo eliminar la incidencia.');

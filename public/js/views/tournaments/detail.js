@@ -134,7 +134,7 @@ function teamsTab(t) {
     return `<div class="card">${emptyState('La inscripción aún no está abierta', isAdmin() ? 'Use «Abrir inscripciones» en la parte superior para empezar a inscribir equipos.' : 'El administrador abrirá la inscripción pronto.', 'teams')}</div>`;
   }
   const enrollForm = editable ? `<form id="enroll-form" class="cluster cluster--end" novalidate>
-      ${field({ name: 'team_id', label: 'Equipo a inscribir', type: 'select', required: true, placeholder: available.length ? 'Seleccione un equipo' : 'No quedan equipos activos disponibles', options: available.map(item => ({ value: item.id, label: item.name })), hint: 'Solo aparecen equipos activos que aún no están inscritos.' })}
+      ${field({ name: 'team_id', label: 'Equipo a inscribir', type: 'select', required: true, placeholder: available.length ? 'Seleccione un equipo' : 'No quedan equipos activos disponibles', options: available.map(item => ({ value: item.id, label: item.name })), hint: 'Equipo que se inscribirá en el torneo.' })}
       ${button('Inscribir', { type: 'submit', tone: 'primary', iconName: 'plus' })}
       <p class="form-error" role="alert"></p>
     </form>` : '';
@@ -143,7 +143,7 @@ function teamsTab(t) {
       <p class="muted">${t.type === 'league'
         ? 'El orden de los equipos define el calendario: qué equipos se enfrentan en cada jornada y quién descansa si son impares. Se necesitan al menos 3 equipos.'
         : 'El orden de los equipos define los cruces del cuadro: el 1 enfrenta al último, el 2 al penúltimo, etc. Si el número de equipos no es potencia de 2, los primeros del orden pasan directo a la siguiente ronda.'}</p>
-      ${field({ name: 'draw_method', label: '¿Cómo ordenar a los equipos?', type: 'select', required: true, value: 'random', options: [{ value: 'random', label: 'Sorteo aleatorio' }, { value: 'manual', label: 'Usar el orden de la lista (manual)' }], hint: 'Con orden manual puede usar las flechas para ubicar a cada equipo.' })}
+      ${field({ name: 'draw_method', label: '¿Cómo ordenar a los equipos?', type: 'select', required: true, value: 'random', options: [{ value: 'random', label: 'Sorteo aleatorio' }, { value: 'manual', label: 'Usar el orden de la lista (manual)' }], hint: 'Cómo se ordenan los equipos antes de generar los partidos.' })}
       <div>${button('Cerrar inscripción', { type: 'submit', tone: 'primary', iconName: 'check' })}</div>
       <p class="form-error" role="alert"></p>
     </form>` : '';
