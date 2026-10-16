@@ -1,0 +1,34 @@
+server {
+    listen __PORT__;
+    server_name _;
+    root /var/www/html/public;
+    index index.php;
+    client_max_body_size 3m;
+    access_log /dev/stdout;
+    error_log /dev/stderr warn;
+    # Only Railway's proxy can reach the container; trust the address it appends
+    # so the login rate limit applies per client instead of to everyone.
+    set_real_ip_from 0.0.0.0/0;
+    set_real_ip_from ::/0;
+    real_ip_header X-Forwarded-For;
+    add_header X-Content-Type-Options nosniff always;
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
+        fastcgi_param HTTPS $fwd_https;
+        fastcgi_read_timeout 60;
+    }
+    location ~ \.php$ { return 404; }
+    location ~ /\. { deny all; }
+    location /uploads/ { autoindex off; try_files $uri =404; }
+    # ES modules and stylesheets are revalidated (ETag) so a deploy never mixes old and new files.
+    location ~* \.(js|css)$ {
+        add_header Cache-Control "no-cache" always;
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri =404;
+    }
+}
+# Railway terminates TLS at its proxy and forwards the original scheme.
+map $http_x_forwarded_proto $fwd_https { https on; default ""; }
